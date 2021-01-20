@@ -24,14 +24,17 @@ class _QuestionState extends State<Question> {
   void initState() {
     super.initState();
     prefs.then((value) => {
-          title.text = value.getString(QuestionConstants.title),
-          detail.text = value.getString(QuestionConstants.detail)
-        });
+      title.text = value.getString(QuestionConstants.title),
+      detail.text = value.getString(QuestionConstants.detail)
+    });
   }
 
   var _imagePath;
 
-  void _submit() {}
+  void _submitQuestion() {
+
+
+  }
 
   void _takePhoto() {}
 
@@ -87,7 +90,7 @@ class _QuestionState extends State<Question> {
             decoration: InputDecoration(
                 labelText: 'Detail', icon: Icon(Icons.text_snippet)),
           ),
-          RaisedButton(onPressed: _submit, child: Text('Submit'))
+          RaisedButton(onPressed: _submitQuestion, child: Text('Submit'))
         ],
       ),
     );
