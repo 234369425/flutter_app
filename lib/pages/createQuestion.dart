@@ -1,39 +1,55 @@
 import 'dart:convert';
-import 'dart:io';
+import 'dart:io' as IO;
 
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter_app/constants.dart';
+import 'package:flutter_app/db/DBOpera.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class Question extends StatefulWidget {
+class QuestionWidget extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => _QuestionState();
+  State<StatefulWidget> createState() => _QuestionWidgetState();
 }
 
-class _QuestionState extends State<Question> {
+class _QuestionWidgetState extends State<QuestionWidget> {
   final TextEditingController title = TextEditingController();
   final TextEditingController detail = TextEditingController();
   final Future<SharedPreferences> prefs = SharedPreferences.getInstance();
-
   final ImagePicker picker = ImagePicker();
+  var _imagePath;
 
   @override
   void initState() {
     super.initState();
     prefs.then((value) => {
-      title.text = value.getString(QuestionConstants.title),
-      detail.text = value.getString(QuestionConstants.detail)
-    });
+          title.text = value.getString(QuestionConstants.title),
+          detail.text = value.getString(QuestionConstants.detail)
+        });
   }
 
-  var _imagePath;
-
   void _submitQuestion() {
-
-
+    DBOperator operator = DBOperator();
+    String imageStr = '';
+    if (_imagePath != null) {
+      final bytes = IO.File(_imagePath).readAsBytesSync();
+      imageStr = base64.encode(bytes);
+      String suffix = _imagePath == null
+          ? ''
+          : _imagePath.substring(_imagePath.lastIndexOf('.') + 1);
+      operator.insertQuestion(title.text,
+          'data:image/' + suffix + ';base64,' + imageStr, detail.text);
+    } else {
+      operator.insertQuestion(title.text, null, detail.text);
+    }
+    prefs.then((value) => {
+          value.remove(QuestionConstants.image),
+          value.remove(QuestionConstants.detail),
+          value.remove(QuestionConstants.title)
+        });
+    Navigator.popAndPushNamed(context, RouterPathConstants.index);
   }
 
   void _takePhoto() {}
@@ -41,7 +57,7 @@ class _QuestionState extends State<Question> {
   _showImagePicker(ImageSource source) async {
     var image = await picker.getImage(source: source);
     setState(() {
-      _imagePath = image;
+      _imagePath = image.path;
     });
     prefs.then(
         (value) => {value.setString(QuestionConstants.image, _imagePath)});
@@ -56,7 +72,9 @@ class _QuestionState extends State<Question> {
   }
 
   @override
-  void dispose() {}
+  void dispose() {
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
