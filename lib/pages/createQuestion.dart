@@ -49,7 +49,9 @@ class _QuestionWidgetState extends State<QuestionWidget> {
           value.remove(QuestionConstants.detail),
           value.remove(QuestionConstants.title)
         });
-    Navigator.popAndPushNamed(context, RouterPathConstants.index);
+
+    Navigator.pushNamedAndRemoveUntil(
+        context, RouterPathConstants.index, (route) => false);
   }
 
   void _takePhoto() {}

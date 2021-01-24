@@ -13,6 +13,7 @@ class Index extends StatefulWidget {
 
 class _IndexState extends State<Index> {
   DBOperator _dbOperator = new DBOperator();
+  final SlidableController slidableController = SlidableController();
 
   void _toAskQuestion() {
     Navigator.pushNamed(context, RouterPathConstants.createQuestion);
@@ -27,11 +28,12 @@ class _IndexState extends State<Index> {
     ListTile tile = ListTile(
         title: Text(q.title),
         leading: CircleAvatar(
-          backgroundColor: q.isNew ? Colors.indigoAccent : Colors.grey,
-          child: q.isNew ? Text('1') : Text('0'),
+          backgroundColor:
+              q.newMessage == 0 ? Colors.indigoAccent : Colors.grey,
+          child: Text(q.newMessage.toString()),
           foregroundColor: Colors.white,
         ),
-        trailing: q.isNew ? Icon(Icons.announcement_rounded) : null,
+        trailing: q.newMessage > 0 ? Icon(Icons.announcement_rounded) : null,
         subtitle: Text(q.createTime),
         onTap: () {
           _showDetail(q);
@@ -45,7 +47,10 @@ class _IndexState extends State<Index> {
         arguments: s);
   }
 
-  _showSnackBar(String action, Question q) {
+  _doMethod(String action, Question q) {
+    if (action == 'Delete') {
+      _dbOperator.deleteQuestion(q.id);
+    }
     print(action);
   }
 
@@ -72,6 +77,49 @@ class _IndexState extends State<Index> {
                     return Slidable(
                       actionPane: SlidableDrawerActionPane(),
                       actionExtentRatio: 0.25,
+                      key: Key(q.id.toString()),
+                      controller: slidableController,
+                      closeOnScroll: true,
+                      dismissal: SlidableDismissal(
+                        child: SlidableDrawerDismissal(),
+                        onDismissed: (actionType) {
+                          /**
+                        _showSnack(
+                        context,
+                        actionType == SlideActionType.primary
+                        ? 'Dismiss Archive'
+                        : 'Dimiss Delete');
+                        setState(() {
+                        list.removeAt(index);
+                        });**/
+                          setState(() {
+                            snapshot.data.removeAt(i);
+                          });
+                        },
+                        onWillDismiss: (actionType) {
+                          return showDialog<bool>(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: Text('Delete'),
+                                content: Text('Item will be deleted'),
+                                actions: <Widget>[
+                                  FlatButton(
+                                    child: Text('Cancel'),
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(false),
+                                  ),
+                                  FlatButton(
+                                    child: Text('Ok'),
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(true),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                      ),
                       child:
                           Container(color: Colors.white, child: _buildRow(q)),
                       actions: <Widget>[
@@ -79,7 +127,7 @@ class _IndexState extends State<Index> {
                           caption: 'Mark',
                           color: Colors.indigo,
                           icon: Icons.library_add,
-                          onTap: () => _showSnackBar('Mark', q),
+                          onTap: () => _doMethod('Mark', q),
                         ),
                       ],
                       secondaryActions: <Widget>[
@@ -93,7 +141,7 @@ class _IndexState extends State<Index> {
                           caption: 'Delete',
                           color: Colors.red,
                           icon: Icons.delete,
-                          onTap: () => _showSnackBar('Delete', q),
+                          onTap: () => _doMethod('Delete', q),
                         ),
                       ],
                     );
