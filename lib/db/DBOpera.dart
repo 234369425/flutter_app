@@ -40,10 +40,11 @@ class DBOperator {
   Future<List<Question>> listQuestion() async {
     var database = await init();
     List<Map> list = await database.rawQuery(
-        "select id, title,create_time from Question order by create_time desc,new_message desc");
+        "select id, title, create_time, new_message "
+            "from Question order by create_time desc,new_message desc");
     var result = List<Question>();
     for (var v in list) {
-      result.add(Question(v["id"], v["title"], v["create_time"], v["new_message"]) == null ? 0 : v["new_message"]);
+      result.add(new Question(v["id"], v["title"], v["create_time"], v["new_message"] == null ? 0 : v["new_message"]));
     }
     return result;
   }
