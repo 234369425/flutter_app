@@ -58,6 +58,9 @@ class _QuestionWidgetState extends State<QuestionWidget> {
 
   _showImagePicker(ImageSource source) async {
     var image = await picker.getImage(source: source);
+    if (image == null) {
+      return;
+    }
     setState(() {
       _imagePath = image.path;
     });

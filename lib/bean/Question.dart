@@ -9,7 +9,8 @@ class Question {
   Question(this.id, this.title, this.createTime, this.newMessage);
 
   static Question of(Map<String,dynamic> q){
-    Question qt = Question(q["id"], q["title"], q["image"], q["new_message"]);
+    Question qt = Question(q["id"], q["title"], q["create_time"], q["new_message"]);
+    qt.image = q["image"];
     qt.content = q["content"];
     return qt;
   }

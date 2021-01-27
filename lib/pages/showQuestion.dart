@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/bean/Question.dart';
 import 'package:flutter_app/db/DBOpera.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_html/style.dart';
 
 class ShowQuestion extends StatefulWidget {
   final Question q;
@@ -37,9 +38,16 @@ class _ShowQuestionState extends State<ShowQuestion> {
             Html(
               data: '''
             <h1>${_question.title}</h1>
+            <div class=".time">${_question.createTime}</div>
             <img src="${_question.image}">
-            <span>${_question.content}</span>
+            <blockquote>${_question.content}</blockquote>
           ''',
+              style: {
+                "div": Style(
+                    margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                    textAlign: TextAlign.center),
+                "blockquote": Style(margin: EdgeInsets.fromLTRB(0, 8, 0, 0)),
+              },
             )
           ],
         ));
