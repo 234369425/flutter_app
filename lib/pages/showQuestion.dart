@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/bean/Question.dart';
 import 'package:flutter_app/db/DBOpera.dart';
+import 'package:flutter_html/flutter_html.dart';
 
 class ShowQuestion extends StatefulWidget {
   final Question q;
@@ -27,26 +28,20 @@ class _ShowQuestionState extends State<ShowQuestion> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        height: 100.0,
-        color: Colors.white,
-        width: MediaQuery.of(context).size.width,
-        child: RichText(
-          text: TextSpan(
-              text: _question.title,
-              style: TextStyle(
-                  color: Colors.black26,
-                  fontSize: 35,
-                  fontWeight: FontWeight.bold),
-              children: [
-                TextSpan(
-                    text: _question.content == null ? '' : _question.content,
-                style: TextStyle(
-                  color: Colors.black45,
-                  fontSize: 30
-                )
-                )
-              ]),
+    return Scaffold(
+        appBar: AppBar(
+          title: Text(_question.title),
+        ),
+        body: Column(
+          children: [
+            Html(
+              data: '''
+            <h1>${_question.title}</h1>
+            <img src="${_question.image}">
+            <span>${_question.content}</span>
+          ''',
+            )
+          ],
         ));
   }
 
