@@ -33,7 +33,13 @@ dependencies:
   shared_preferences: ^0.5.12+4
   sqflite: ^1.3.0
   flutter_slidable: 0.5.7
+  flutter_image_compress: 0.7.0
+  flutter_cache_manager: 2.1.1
   flutter_html: 1.2.0
+  #状态管理
+  provider: 4.3.1
+  toast: 0.1.5
+  cached_network_image: 2.5.0
 
 dev_dependencies:
   flutter_test:
@@ -49,6 +55,16 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+  assets:
+    - assets/images/tab/chat_c.webp
+    - assets/images/tab/chat_s.webp
+    - assets/images/tab/contacts_c.webp
+    - assets/images/tab/contacts_s.webp
+    - assets/images/tab/discover_c.webp
+    - assets/images/tab/discover_s.webp
+    - assets/images/tab/me_c.webp
+    - assets/images/tab/me_s.webp
+    - assets/images/def_head_portrait.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:

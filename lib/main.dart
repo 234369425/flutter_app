@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/bean/Question.dart';
+import 'package:flutter_app/layout/application.dart';
 import 'package:flutter_app/pages/createQuestion.dart';
 import 'package:flutter_app/pages/showQuestion.dart';
 import 'package:flutter_app/constants.dart';
@@ -16,7 +17,7 @@ void main() {
     onGenerateRoute: (RouteSettings settings) {
       var routes = <String, WidgetBuilder>{
         RouterPathConstants.login: (context) => LoginFrame(),
-        RouterPathConstants.index: (context) => Index(),
+        RouterPathConstants.index: (context) => ApplicationLayout(),
         RouterPathConstants.createQuestion: (context) => QuestionWidget(),
         RouterPathConstants.showQuestion: (context) =>
             ShowQuestion(q: (settings.arguments as Map<String, Question>)['q'])
@@ -25,4 +26,5 @@ void main() {
       return MaterialPageRoute(builder: (ctx) => builder(ctx));
     },
   ));
+
 }

@@ -4,14 +4,14 @@ import 'package:flutter_app/db/DBOpera.dart';
 import 'package:flutter_app/bean/Question.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
-class Index extends StatefulWidget {
+class QuestionList extends StatefulWidget {
   final String title = "Welcome ";
 
   @override
-  _IndexState createState() => _IndexState();
+  _QuestionListState createState() => _QuestionListState();
 }
 
-class _IndexState extends State<Index> {
+class _QuestionListState extends State<QuestionList> {
   DBOperator _dbOperator = new DBOperator();
   final SlidableController slidableController = SlidableController();
 

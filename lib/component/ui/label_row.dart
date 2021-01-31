@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-
-import 'package:wechat_flutter/tools/wechat_flutter.dart';
+import 'package:flutter_app/constants/color.dart';
 
 class LabelRow extends StatelessWidget {
   final String label;

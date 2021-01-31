@@ -1,111 +1,75 @@
-import 'package:wechat_flutter/config/keys.dart';
-export 'package:wechat_flutter/config/keys.dart';
-import 'package:wechat_flutter/config/storage_manager.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class SharedUtil {
-  factory SharedUtil() => _getInstance();
+class Shared {
+  factory Shared() => _getInstance();
 
-  static SharedUtil get instance => _getInstance();
-  static SharedUtil _instance;
+  static Shared get instance => _getInstance();
+  static Shared _instance;
+  final Future<SharedPreferences> prefs = SharedPreferences.getInstance();
 
-  SharedUtil._internal() {
+  Shared._internal() {
     //初始化
     //init
   }
 
-  static SharedUtil _getInstance() {
+  static Shared _getInstance() {
     if (_instance == null) {
-      _instance = new SharedUtil._internal();
+      _instance = new Shared._internal();
     }
     return _instance;
   }
 
+  Future<String> getAccount() async {
+    return prefs.then((v) => v.getString("user"));
+  }
 
   /// save
   Future saveString(String key, String value) async {
-    if (key == Keys.account) {
-      await StorageManager.sp.setString(key, value);
-      return;
-    }
-    String account = StorageManager.sp.getString(Keys.account) ?? "default";
-    await StorageManager.sp.setString(key + account, value);
+    getAccount()
+        .then((a) => prefs.then((v) => v.setString(a + ":" + key, value)));
   }
 
   Future saveInt(String key, int value) async {
-    String account = StorageManager.sp.getString(Keys.account) ?? "default";
-    await StorageManager.sp.setInt(key + account, value);
+    getAccount().then((a) => prefs.then((v) => v.setInt(a + ":" + key, value)));
   }
 
   Future saveDouble(String key, double value) async {
-    String account = StorageManager.sp.getString(Keys.account) ?? "default";
-    await StorageManager.sp.setDouble(key + account, value);
+    getAccount()
+        .then((a) => prefs.then((v) => v.setDouble(a + ":" + key, value)));
   }
 
   Future saveBoolean(String key, bool value) async {
-    String account = StorageManager.sp.getString(Keys.account) ?? "default";
-    await StorageManager.sp.setBool(key + account, value);
+    getAccount()
+        .then((a) => prefs.then((v) => v.setBool(a + ":" + key, value)));
   }
 
   Future saveStringList(String key, List<String> list) async {
-    String account = StorageManager.sp.getString(Keys.account) ?? "default";
-    await StorageManager.sp.setStringList(key + account, list);
-  }
-
-  Future<bool> readAndSaveList(String key, String data) async {
-    String account = StorageManager.sp.getString(Keys.account) ?? "default";
-    List<String> strings = StorageManager.sp.getStringList(key + account) ?? [];
-    if (strings.length >= 10) return false;
-    strings.add(data);
-    await StorageManager.sp.setStringList(key + account, strings);
-    return true;
-  }
-
-  void readAndExchangeList(String key, String data, int index) async {
-    String account = StorageManager.sp.getString(Keys.account) ?? "default";
-    List<String> strings = StorageManager.sp.getStringList(key + account) ?? [];
-    strings[index] = data;
-    await StorageManager.sp.setStringList(key + account, strings);
-  }
-
-  void readAndRemoveList(String key, int index) async {
-    String account = StorageManager.sp.getString(Keys.account) ?? "default";
-    List<String> strings = StorageManager.sp.getStringList(key + account) ?? [];
-    strings.removeAt(index);
-    await StorageManager.sp.setStringList(key + account, strings);
+    getAccount()
+        .then((a) => prefs.then((v) => v.setStringList(a + ":" + key, list)));
   }
 
   /// get
   Future<String> getString(String key) async {
-    if (key == Keys.account) {
-      return StorageManager.sp.getString(key);
-    }
-    String account = StorageManager.sp.getString(Keys.account) ?? "default";
-    return StorageManager.sp.getString(key + account);
+    return getAccount()
+        .then((a) => prefs.then((v) => v.getString(a + ":" + key)));
   }
 
   Future<int> getInt(String key) async {
-    String account = StorageManager.sp.getString(Keys.account) ?? "default";
-    return StorageManager.sp.getInt(key + account);
+    return getAccount().then((a) => prefs.then((v) => v.getInt(a + ":" + key)));
   }
 
   Future<double> getDouble(String key) async {
-    String account = StorageManager.sp.getString(Keys.account) ?? "default";
-    return StorageManager.sp.getDouble(key + account);
+    return getAccount()
+        .then((a) => prefs.then((v) => v.getDouble(a + ":" + key)));
   }
 
-  Future<bool> getBoolean(String key) async {
-    String account = StorageManager.sp.getString(Keys.account) ?? "default";
-    return StorageManager.sp.getBool(key + account) ?? false;
+  Future<bool> getBool(String key) async {
+    return getAccount()
+        .then((a) => prefs.then((v) => v.getBool(a + ":" + key)));
   }
 
   Future<List<String>> getStringList(String key) async {
-    String account = StorageManager.sp.getString(Keys.account) ?? "default";
-    return StorageManager.sp.getStringList(key + account);
-  }
-
-  Future<List<String>> readList(String key) async {
-    String account = StorageManager.sp.getString(Keys.account) ?? "default";
-    List<String> strings = StorageManager.sp.getStringList(key + account) ?? [];
-    return strings;
+    return getAccount()
+        .then((a) => prefs.then((v) => v.getStringList(a + ":" + key)));
   }
 }

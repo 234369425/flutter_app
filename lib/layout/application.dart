@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/layout/TabBar.dart';
+import 'package:flutter_app/pages/my/MyPage.dart';
 import 'package:flutter_app/pages/questionList.dart';
 
 class ApplicationLayout extends StatefulWidget {
@@ -13,10 +14,16 @@ class _LayoutPageState extends State<ApplicationLayout> {
   Widget build(BuildContext context) {
     List<TabBarModel> pages = <TabBarModel>[
       new TabBarModel(
-          title: "问题",
-          icon: _LoadIcon("assets/images/tabbar_chat_c.webp"),
-          selectIcon: _LoadIcon("assets/images/tabbar_chat_s.webp"),
+          title: "Questions",
+          icon: _LoadIcon("assets/images/tab/chat_c.webp"),
+          selectIcon: _LoadIcon("assets/images/tab/chat_s.webp"),
           page: QuestionList()
+      ),
+      new TabBarModel(
+          title: "Me",
+          icon: _LoadIcon("assets/images/tab/me_c.webp"),
+          selectIcon: _LoadIcon("assets/images/tab/me_s.webp"),
+          page: MyPage()
       )
     ];
     return new Scaffold(

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:wechat_flutter/config/const.dart';
+import 'package:flutter_app/constants/color.dart';
 
-class ComMomBar extends StatelessWidget implements PreferredSizeWidget {
-  const ComMomBar(
+class HeaderBar extends StatelessWidget implements PreferredSizeWidget {
+  const HeaderBar(
       {this.title = '',
       this.showShadow = false,
       this.rightDMActions,
