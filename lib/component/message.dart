@@ -36,35 +36,42 @@ class Message extends StatelessWidget {
     return content;
   }
 
-  List _buildChildren() {
-    List list = new List<Widget>();
-    if (!self) {
-      list.add(Container(
-        width: 50,
-      ));
-    }
+  String _buildChildren() {
+    String html = '<div>';
+    html += '<table>';
+    html += '<tr>';
 
-    list.add(Container(
-      width: 600,
-      child: ListView(
+    /**
+        if (!self) {
+        list.add(Container(
+        width: 50,
+        ));
+        }
+
+
+        list.add(Container(
+        width: 600,
+        child: ListView(
         children: _buildContent(),
-      ),
-    ));
+        ),
+        ));*/
 
-    if (self) {
-      list.add(Container(
+    /**
+        if (self) {
+        list.add(Container(
         width: 50,
-      ));
-    }
-    return list;
+        ));
+        }
+     */
+    html += '</tr>';
+    html += '</table>';
+    html += '</div>';
+    return html;
   }
 
   @override
   Widget build(BuildContext context) {
     final double width = shrinkWrap ? null : MediaQuery.of(context).size.width;
-    return ListView(
-      scrollDirection: Axis.horizontal,
-      children: _buildChildren(),
-    );
+    return Html(data: '<table><tr>' + _buildChildren() + '</tr></table>');
   }
 }
