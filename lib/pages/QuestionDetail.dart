@@ -1,26 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/bean/Question.dart';
 import 'package:flutter_app/component/message.dart';
+import 'package:flutter_app/component/ui/header_bar.dart';
 import 'package:flutter_app/db/DBOpera.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/style.dart';
 
-class ShowQuestion extends StatefulWidget {
+class QuestionDetail extends StatefulWidget {
   final Question q;
 
-  ShowQuestion({this.q});
+  QuestionDetail(this.q);
 
   @override
   State<StatefulWidget> createState() {
-    return _ShowQuestionState(this.q.id);
+    return _QuestionDetailState(this.q.id);
   }
 }
 
-class _ShowQuestionState extends State<ShowQuestion> {
+class _QuestionDetailState extends State<QuestionDetail> {
   final DBOperator dbOperator = new DBOperator();
   Question _question = Question(-1, "loading", "loading", 2);
 
-  _ShowQuestionState(int id) {
+  _QuestionDetailState(int id) {
     dbOperator.viewQuestion(id).then((value) => {
           this.setState(() {
             _question = value;
@@ -31,9 +32,7 @@ class _ShowQuestionState extends State<ShowQuestion> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(_question.title),
-        ),
+        appBar: new HeaderBar(title: _question.title),
         body: Column(
           children: [
             Html(

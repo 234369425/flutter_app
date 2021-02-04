@@ -49,8 +49,9 @@ class _ApplicationTabBarState extends State<ApplicationTabBar> {
         setState(() => currentIndex = index);
         pageController.jumpToPage(currentIndex);
       },
-      unselectedFontSize: 18.0,
-      selectedFontSize: 18.0,
+      iconSize: 16,
+      unselectedFontSize: 12.0,
+      selectedFontSize: 12.0,
       elevation: 0,
     );
 

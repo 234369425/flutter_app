@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/component/ui/header_bar.dart';
 import 'package:flutter_app/constants.dart';
 import 'package:flutter_app/db/DBOpera.dart';
 import 'package:flutter_app/bean/Question.dart';
+import 'package:flutter_app/pages/QuestionDetail.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:flutter_app/utils/route.dart';
 
 class QuestionList extends StatefulWidget {
   final String title = "Welcome ";
@@ -41,10 +44,8 @@ class _QuestionListState extends State<QuestionList> {
     return tile;
   }
 
-  _showDetail(Question q) {
-    dynamic s = <String, Question>{"q": q};
-    Navigator.pushNamed(context, RouterPathConstants.showQuestion,
-        arguments: s);
+  _showDetail(Question qs) {
+    push(new QuestionDetail(qs));
   }
 
   _doMethod(String action, Question q) {
@@ -57,13 +58,7 @@ class _QuestionListState extends State<QuestionList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-        actions: [
-          IconButton(
-              onPressed: _toAskQuestion, icon: Icon(Icons.add_circle_sharp)),
-        ],
-      ),
+      appBar: new HeaderBar(title: 'Question list'),
       body: FutureBuilder<List>(
         future: _dbOperator.listQuestion(),
         initialData: List(),
