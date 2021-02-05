@@ -29,47 +29,63 @@ class _QuestionDetailState extends State<QuestionDetail> {
         });
   }
 
+  _createRow({bool self = false}) {
+    return Row(
+      children: [
+        Expanded(
+          flex: 2,
+          child: Padding(
+              padding: EdgeInsets.fromLTRB(10, 5, 10, 160.0),
+              child: Container(
+                child: self
+                    ? Text('')
+                    : new Image.asset('assets/images/def_head_portrait.png',
+                        fit: BoxFit.cover, gaplessPlayback: true),
+              )),
+        ),
+        Expanded(
+            flex: 8,
+            child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(5),
+                  gradient: self
+                      ? LinearGradient(
+                          colors: [Colors.lightGreen, Colors.lightGreen])
+                      : LinearGradient(
+                          colors: [Colors.black12, Colors.black12]),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
+                  child: Text(
+                      '''确定如何在垂直方向摆放子组件，以及如何解释 start 和 end，指定 height 可以看到效果，可选值有：
+                  VerticalDirection.up：Row 从下至上开始摆放子组件，此时我们看到的底部其实是顶部。
+                  VerticalDirection.down：Row 从上至下开始摆放子组件，此时我们看到的顶部就是顶部。'''),
+                ))),
+        Expanded(
+            flex: 2,
+            child: Padding(
+                padding: EdgeInsets.fromLTRB(10, 5, 10, 160.0),
+                child: Container(
+                  child: self
+                      ? new Image.asset('assets/images/def_head_portrait.png',
+                          fit: BoxFit.cover, gaplessPlayback: true)
+                      : Text(''),
+                )))
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: new HeaderBar(title: _question.title),
         body: Column(
           children: [
-            Html(
-              data: '''
-            <h1>${_question.title}</h1>
-            <div style="text-align:center;padding-bottom:15;color:blue;">${_question.createTime}</div>
-            <img style="margin:15px 0" src="${_question.image}">
-            <div>${_question.content}</div>
-            
-            <hr/>
-            <div style="text-align:center;">
-            <table>
-              <tr>
-                <td style="alignment">左面</td>
-                <td width="45.5">中间</td>
-                <td width="15.5">右面</td>
-              </tr>
-            </table>
-            </div>
-            <div>
-              <div style="float:left;width:22.9;">
-                问题额
-              </div>
-              <div style="float:left:width:70%">
-              回答一
-              </div>
-              <div style="float:left:width:15%">
-              </div>
-            </div>
-          ''',
-              style: {
-                "blockquote": Style(margin: EdgeInsets.fromLTRB(0, 8, 0, 0)),
-              },
-            ),
-            //Message()
+            _createRow(),
+            _createRow(self: true),
           ],
-        ));
+        ),
+        bottomNavigationBar: new BottomAppBar(child: Text("bar")));
   }
 
   @override

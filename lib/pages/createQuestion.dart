@@ -3,8 +3,11 @@ import 'dart:io' as IO;
 
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:flutter_app/component/ui/header_bar.dart';
 import 'package:flutter_app/constants.dart';
 import 'package:flutter_app/db/DBOpera.dart';
+import 'package:flutter_app/pages/questionList.dart';
+import 'package:flutter_app/utils/route.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -49,9 +52,7 @@ class _QuestionWidgetState extends State<QuestionWidget> {
           value.remove(QuestionConstants.detail),
           value.remove(QuestionConstants.title)
         });
-
-    Navigator.pushNamedAndRemoveUntil(
-        context, RouterPathConstants.index, (route) => false);
+    popUntilPage(QuestionList());
   }
 
   void _takePhoto() {}
@@ -84,7 +85,7 @@ class _QuestionWidgetState extends State<QuestionWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Enter you question')),
+      appBar: new HeaderBar(title: 'Create New Question'),
       body: Column(
         children: [
           TextField(
@@ -113,7 +114,7 @@ class _QuestionWidgetState extends State<QuestionWidget> {
             decoration: InputDecoration(
                 labelText: 'Detail', icon: Icon(Icons.text_snippet)),
           ),
-          RaisedButton(onPressed: _submitQuestion, child: Text('Submit'))
+          RaisedButton(onPressed: _submitQuestion, child: Text('Ask'))
         ],
       ),
     );

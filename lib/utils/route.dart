@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 
 final navGK = new GlobalKey<NavigatorState>();
 
-Future<dynamic> push(Widget widget) {
+Future<dynamic> routerPush(Widget widget) {
   final route = new CupertinoPageRoute(
     builder: (BuildContext context) => widget,
     settings: new RouteSettings(
@@ -10,4 +10,12 @@ Future<dynamic> push(Widget widget) {
     ),
   );
   return navGK.currentState.push(route);
+}
+
+popUntilPage(Widget page) {
+  try {
+    navGK.currentState.popUntil(ModalRoute.withName(page.toStringShort()));
+  } catch (e) {
+    print('pop路由出现错误:::${e.toString()}');
+  }
 }

@@ -4,6 +4,7 @@ import 'package:flutter_app/constants.dart';
 import 'package:flutter_app/db/DBOpera.dart';
 import 'package:flutter_app/bean/Question.dart';
 import 'package:flutter_app/pages/QuestionDetail.dart';
+import 'package:flutter_app/pages/createQuestion.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_app/utils/route.dart';
 
@@ -19,7 +20,7 @@ class _QuestionListState extends State<QuestionList> {
   final SlidableController slidableController = SlidableController();
 
   void _toAskQuestion() {
-    Navigator.pushNamed(context, RouterPathConstants.createQuestion);
+    routerPush(QuestionWidget());
   }
 
   @override
@@ -32,7 +33,7 @@ class _QuestionListState extends State<QuestionList> {
         title: Text(q.title),
         leading: CircleAvatar(
           backgroundColor:
-              q.newMessage == 0 ? Colors.indigoAccent : Colors.grey,
+          q.newMessage == 0 ? Colors.indigoAccent : Colors.grey,
           child: Text(q.newMessage.toString()),
           foregroundColor: Colors.white,
         ),
@@ -45,7 +46,7 @@ class _QuestionListState extends State<QuestionList> {
   }
 
   _showDetail(Question qs) {
-    push(new QuestionDetail(qs));
+    routerPush(new QuestionDetail(qs));
   }
 
   _doMethod(String action, Question q) {
@@ -58,27 +59,33 @@ class _QuestionListState extends State<QuestionList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: new HeaderBar(title: 'Question list'),
+      appBar: new HeaderBar(title: 'Question list', rightDMActions: [
+        IconButton(
+          icon: Icon(Icons.add),
+          color: Colors.blueAccent,
+          onPressed: _toAskQuestion,
+        )
+      ]),
       body: FutureBuilder<List>(
         future: _dbOperator.listQuestion(),
         initialData: List(),
         builder: (context, snapshot) {
           return snapshot.hasData
               ? new ListView.builder(
-                  padding: const EdgeInsets.all(10.0),
-                  itemCount: snapshot.data.length,
-                  itemBuilder: (context, i) {
-                    var q = snapshot.data[i];
-                    return Slidable(
-                      actionPane: SlidableDrawerActionPane(),
-                      actionExtentRatio: 0.25,
-                      key: Key(q.id.toString()),
-                      controller: slidableController,
-                      closeOnScroll: true,
-                      dismissal: SlidableDismissal(
-                        child: SlidableDrawerDismissal(),
-                        onDismissed: (actionType) {
-                          /**
+            padding: const EdgeInsets.all(10.0),
+            itemCount: snapshot.data.length,
+            itemBuilder: (context, i) {
+              var q = snapshot.data[i];
+              return Slidable(
+                actionPane: SlidableDrawerActionPane(),
+                actionExtentRatio: 0.25,
+                key: Key(q.id.toString()),
+                controller: slidableController,
+                closeOnScroll: true,
+                dismissal: SlidableDismissal(
+                  child: SlidableDrawerDismissal(),
+                  onDismissed: (actionType) {
+                    /**
                         _showSnack(
                         context,
                         actionType == SlideActionType.primary
@@ -87,64 +94,64 @@ class _QuestionListState extends State<QuestionList> {
                         setState(() {
                         list.removeAt(index);
                         });**/
-                          setState(() {
-                            snapshot.data.removeAt(i);
-                          });
-                        },
-                        onWillDismiss: (actionType) {
-                          return showDialog<bool>(
-                            context: context,
-                            builder: (context) {
-                              return AlertDialog(
-                                title: Text('Delete'),
-                                content: Text('Item will be deleted'),
-                                actions: <Widget>[
-                                  FlatButton(
-                                    child: Text('Cancel'),
-                                    onPressed: () =>
-                                        Navigator.of(context).pop(false),
-                                  ),
-                                  FlatButton(
-                                    child: Text('Ok'),
-                                    onPressed: () =>
-                                        Navigator.of(context).pop(true),
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                        },
-                      ),
-                      child:
-                          Container(color: Colors.white, child: _buildRow(q)),
-                      actions: <Widget>[
-                        IconSlideAction(
-                          caption: 'Mark',
-                          color: Colors.indigo,
-                          icon: Icons.library_add,
-                          onTap: () => _doMethod('Mark', q),
-                        ),
-                      ],
-                      secondaryActions: <Widget>[
-                        IconSlideAction(
-                          caption: 'View',
-                          color: Colors.black45,
-                          icon: Icons.more_horiz,
-                          onTap: () => _showDetail(q),
-                        ),
-                        IconSlideAction(
-                          caption: 'Delete',
-                          color: Colors.red,
-                          icon: Icons.delete,
-                          onTap: () => _doMethod('Delete', q),
-                        ),
-                      ],
+                    setState(() {
+                      snapshot.data.removeAt(i);
+                    });
+                  },
+                  onWillDismiss: (actionType) {
+                    return showDialog<bool>(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: Text('Delete'),
+                          content: Text('Item will be deleted'),
+                          actions: <Widget>[
+                            FlatButton(
+                              child: Text('Cancel'),
+                              onPressed: () =>
+                                  Navigator.of(context).pop(false),
+                            ),
+                            FlatButton(
+                              child: Text('Ok'),
+                              onPressed: () =>
+                                  Navigator.of(context).pop(true),
+                            ),
+                          ],
+                        );
+                      },
                     );
                   },
-                )
+                ),
+                child:
+                Container(color: Colors.white, child: _buildRow(q)),
+                actions: <Widget>[
+                  IconSlideAction(
+                    caption: 'Mark',
+                    color: Colors.indigo,
+                    icon: Icons.library_add,
+                    onTap: () => _doMethod('Mark', q),
+                  ),
+                ],
+                secondaryActions: <Widget>[
+                  IconSlideAction(
+                    caption: 'View',
+                    color: Colors.black45,
+                    icon: Icons.more_horiz,
+                    onTap: () => _showDetail(q),
+                  ),
+                  IconSlideAction(
+                    caption: 'Delete',
+                    color: Colors.red,
+                    icon: Icons.delete,
+                    onTap: () => _doMethod('Delete', q),
+                  ),
+                ],
+              );
+            },
+          )
               : Center(
-                  child: CircularProgressIndicator(),
-                );
+            child: CircularProgressIndicator(),
+          );
         },
       ),
     );

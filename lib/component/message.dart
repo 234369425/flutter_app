@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/component/ui/header_bar.dart';
+import 'package:flutter_app/pages/detail/MainBody.dart';
 import 'package:flutter_html/flutter_html.dart';
 
-class Message extends StatelessWidget {
+class Message extends StatefulWidget {
   final String message;
   final String time;
   final String image;
@@ -70,8 +72,29 @@ class Message extends StatelessWidget {
   }
 
   @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    throw UnimplementedError();
+  }
+}
+
+class _MessageState extends State<Message> {
+  bool _isVoice = false;
+  bool _isMore = false;
+  double keyboardHeight = 270.0;
+  bool _emojiState = false;
+  String newGroupName;
+
+  @override
   Widget build(BuildContext context) {
-    final double width = shrinkWrap ? null : MediaQuery.of(context).size.width;
-    return Html(data: '<table><tr>' + _buildChildren() + '</tr></table>');
+    return new Scaffold(
+      appBar: new HeaderBar(title: 'detail'),
+      body: new MainBody(
+        decoration: BoxDecoration(color: Color(0xffefefef)),
+        child: new Column(
+          children: [],
+        ),
+      ),
+    );
   }
 }
