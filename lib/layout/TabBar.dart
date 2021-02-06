@@ -49,25 +49,27 @@ class _ApplicationTabBarState extends State<ApplicationTabBar> {
         setState(() => currentIndex = index);
         pageController.jumpToPage(currentIndex);
       },
-      iconSize: 16,
-      unselectedFontSize: 12.0,
-      selectedFontSize: 12.0,
+      iconSize: 12,
+      unselectedFontSize: 10.0,
+      selectedFontSize: 10.0,
       elevation: 0,
     );
 
     return new Scaffold(
-      bottomNavigationBar: new Theme(
-        data: new ThemeData(
-          canvasColor: Colors.grey[50],
-          highlightColor: Colors.transparent,
-          splashColor: Colors.transparent,
-        ),
-        child: new Container(
-          decoration:
-              BoxDecoration(border: Border(top: BorderSide(color: lineColor))),
-          child: bottomNavigationBar,
-        ),
-      ),
+      bottomNavigationBar: SizedBox(
+          height: 45,
+          child: Theme(
+            data: ThemeData(
+              canvasColor: Colors.grey[50],
+              highlightColor: Colors.transparent,
+              splashColor: Colors.transparent,
+            ),
+            child: Container(
+              decoration: BoxDecoration(
+                  border: Border(top: BorderSide(color: lineColor))),
+              child: bottomNavigationBar,
+            ),
+          )),
       body: new ScrollConfiguration(
           behavior: MyBehavior(),
           child: new PageView.builder(

@@ -20,6 +20,7 @@ class QuestionDetail extends StatefulWidget {
 class _QuestionDetailState extends State<QuestionDetail> {
   final DBOperator dbOperator = new DBOperator();
   Question _question = Question(-1, "loading", "loading", 2);
+  TextEditingController controller = new TextEditingController();
 
   _QuestionDetailState(int id) {
     dbOperator.viewQuestion(id).then((value) => {
@@ -75,6 +76,8 @@ class _QuestionDetailState extends State<QuestionDetail> {
     );
   }
 
+  _addPressed() {}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -85,7 +88,29 @@ class _QuestionDetailState extends State<QuestionDetail> {
             _createRow(self: true),
           ],
         ),
-        bottomNavigationBar: new BottomAppBar(child: Text("bar")));
+        bottomNavigationBar: new BottomAppBar(
+            child: Row(
+          children: [
+            Expanded(
+              flex: 20,
+              child: TextField(
+                controller: controller,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(8))
+                  ),
+                ),
+                style: TextStyle(),
+              ),
+            ),
+            Expanded(
+                flex: 5,
+                child: IconButton(
+                  icon: Icon(Icons.add),
+                  onPressed: _addPressed,
+                ))
+          ],
+        )));
   }
 
   @override

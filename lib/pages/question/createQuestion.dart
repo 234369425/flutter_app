@@ -6,7 +6,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter_app/component/ui/header_bar.dart';
 import 'package:flutter_app/constants.dart';
 import 'package:flutter_app/db/DBOpera.dart';
-import 'package:flutter_app/pages/questionList.dart';
+import 'package:flutter_app/pages/question/questionList.dart';
 import 'package:flutter_app/utils/route.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/cupertino.dart';

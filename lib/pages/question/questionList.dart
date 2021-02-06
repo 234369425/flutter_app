@@ -3,8 +3,8 @@ import 'package:flutter_app/component/ui/header_bar.dart';
 import 'package:flutter_app/constants.dart';
 import 'package:flutter_app/db/DBOpera.dart';
 import 'package:flutter_app/bean/Question.dart';
-import 'package:flutter_app/pages/QuestionDetail.dart';
-import 'package:flutter_app/pages/createQuestion.dart';
+import 'package:flutter_app/pages/question/QuestionDetail.dart';
+import 'package:flutter_app/pages/question/createQuestion.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_app/utils/route.dart';
 

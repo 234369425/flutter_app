@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/config/provider_config.dart';
 import 'package:flutter_app/layout/application.dart';
-import 'package:flutter_app/pages/createQuestion.dart';
+import 'file:///E:/Application/flutter_app/lib/pages/question/createQuestion.dart';
 import 'package:flutter_app/constants.dart';
 import 'package:flutter_app/pages/login.dart';
 import 'package:flutter_app/provider/global_model.dart';
