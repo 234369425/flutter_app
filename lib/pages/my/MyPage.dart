@@ -8,6 +8,7 @@ import 'package:flutter_app/component/ui/header_bar.dart';
 import 'package:flutter_app/component/ui/label_row.dart';
 import 'package:flutter_app/constants/color.dart';
 import 'package:flutter_app/constants/defaults.dart';
+import 'package:flutter_app/pages/my/ChangeName.dart';
 import 'package:flutter_app/provider/global_model.dart';
 import 'package:flutter_app/utils/Image.dart';
 import 'package:flutter_app/utils/Network.dart';
@@ -45,15 +46,12 @@ class _MyPageState extends State<MyPage> {
   Widget _body(GlobalModel model) {
     _model = model;
     List data = [
-      {'label': '微信号', 'value': model.account},
-      {'label': '二维码名片', 'value': ''},
-      {'label': '更多', 'value': ''},
-      {'label': '我的地址', 'value': ''},
+      {'label': 'Grade', 'value': model.account},
     ];
 
     var content = [
       new LabelRow(
-        label: '头像',
+        label: 'Header',
         isLine: true,
         isRight: true,
         rightW: new SizedBox(
@@ -69,11 +67,11 @@ class _MyPageState extends State<MyPage> {
         onPressed: () => _openGallery(),
       ),
       new LabelRow(
-        label: '昵称',
+        label: 'Name',
         isLine: true,
         isRight: true,
         rValue: model.nickName,
-        //onPressed: () => routePush(new ChangeNamePage(model.nickName)),
+        onPressed: () => routePush(new ChangeName(model.nickName)),
       ),
       new Column(
         children: data.map((item) => _buildContent(item, model)).toList(),

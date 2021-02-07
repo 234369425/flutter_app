@@ -49,7 +49,7 @@ class _ApplicationTabBarState extends State<ApplicationTabBar> {
         setState(() => currentIndex = index);
         pageController.jumpToPage(currentIndex);
       },
-      iconSize: 12,
+      iconSize: 35.0,
       unselectedFontSize: 10.0,
       selectedFontSize: 10.0,
       elevation: 0,
@@ -57,7 +57,7 @@ class _ApplicationTabBarState extends State<ApplicationTabBar> {
 
     return new Scaffold(
       bottomNavigationBar: SizedBox(
-          height: 45,
+          height: 65,
           child: Theme(
             data: ThemeData(
               canvasColor: Colors.grey[50],

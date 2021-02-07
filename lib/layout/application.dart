@@ -42,9 +42,11 @@ class _LoadIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new Container(
-      margin: EdgeInsets.only(bottom: 2.0),
-      child: new Image.asset(img, fit: BoxFit.cover, gaplessPlayback: true),
-    );
+    return SizedBox(
+        height: 35,
+        child: Container(
+          margin: EdgeInsets.only(bottom: 2.0),
+          child: Image.asset(img, fit: BoxFit.cover, gaplessPlayback: true),
+        ));
   }
 }
