@@ -12,6 +12,10 @@ Future<dynamic> routerPush(Widget widget) {
   return navGK.currentState.push(route);
 }
 
+popRouter(){
+  navGK.currentState.pop();
+}
+
 popUntilPage(Widget page) {
   try {
     navGK.currentState.popUntil(ModalRoute.withName(page.toStringShort()));

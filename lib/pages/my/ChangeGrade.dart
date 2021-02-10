@@ -6,14 +6,14 @@ import 'package:flutter_app/provider/global_model.dart';
 import 'package:flutter_app/utils/route.dart';
 import 'package:provider/provider.dart';
 
-class ChangeName extends StatefulWidget {
+class ChangeGrade extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
     return _ChangeNameState();
   }
 }
 
-class _ChangeNameState extends State<ChangeName> {
+class _ChangeNameState extends State<ChangeGrade> {
   TextEditingController controller = TextEditingController();
 
   _saveName() {
@@ -35,7 +35,7 @@ class _ChangeNameState extends State<ChangeName> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: appBarColor,
-        appBar: new HeaderBar(title: 'Change Name', rightDMActions: [
+        appBar: new HeaderBar(title: 'Change Grade', rightDMActions: [
           IconButton(icon: Icon(Icons.save), onPressed: _saveName)
         ]),
         body: Column(

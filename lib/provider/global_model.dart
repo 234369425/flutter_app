@@ -11,6 +11,7 @@ class GlobalModel extends ChangeNotifier {
   String account = '';
   String nickName = 'nickName';
   String headPortrait = '';
+  String grade = '';
   int gender = 0;
 
   ///是否进入登录页

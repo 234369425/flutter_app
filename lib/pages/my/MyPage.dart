@@ -8,11 +8,13 @@ import 'package:flutter_app/component/ui/header_bar.dart';
 import 'package:flutter_app/component/ui/label_row.dart';
 import 'package:flutter_app/constants/color.dart';
 import 'package:flutter_app/constants/defaults.dart';
+import 'package:flutter_app/pages/my/ChangeGrade.dart';
 import 'package:flutter_app/pages/my/ChangeName.dart';
 import 'package:flutter_app/provider/global_model.dart';
 import 'package:flutter_app/utils/Image.dart';
 import 'package:flutter_app/utils/Network.dart';
 import 'package:flutter_app/utils/cache.dart';
+import 'package:flutter_app/utils/route.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
@@ -31,23 +33,13 @@ class _MyPageState extends State<MyPage> {
       return;
     }
     String headPortrait = await compressToString(File(image.path));
-    showToast(context, '设置头像成功');
+    showToast(context, 'success ');
     _model.headPortrait = headPortrait;
     _model.refresh();
   }
 
-  _action(v) {
-    if (v == '二维码名片') {
-    } else {
-      print(v);
-    }
-  }
-
   Widget _body(GlobalModel model) {
     _model = model;
-    List data = [
-      {'label': 'Grade', 'value': model.account},
-    ];
 
     var content = [
       new LabelRow(
@@ -71,11 +63,15 @@ class _MyPageState extends State<MyPage> {
         isLine: true,
         isRight: true,
         rValue: model.nickName,
-        onPressed: () => routePush(new ChangeName(model.nickName)),
+        onPressed: () => routerPush(new ChangeName()),
       ),
-      new Column(
-        children: data.map((item) => _buildContent(item, model)).toList(),
-      ),
+      new LabelRow(
+        label: 'Grade',
+        isLine: true,
+        isRight: true,
+        rValue: model.grade,
+        onPressed: () => routerPush(new ChangeGrade()),
+      )
     ];
 
     return new Column(children: content);
@@ -95,24 +91,14 @@ class _MyPageState extends State<MyPage> {
     }
   }
 
-  Widget _buildContent(item, GlobalModel model) {
-    return new LabelRow(
-      label: item['label'],
-      rValue: item['value'],
-      isLine: item['label'] == '我的地址' || item['label'] == '更多' ? false : true,
-      isRight: item['label'] == '微信号' ? false : true,
-      margin: EdgeInsets.only(bottom: item['label'] == '更多' ? 10.0 : 0.0),
-      onPressed: () => _action(item['label']),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return new ChangeNotifierProvider(
         create: (context) => GlobalModel(),
         child: new Scaffold(
             backgroundColor: appBarColor,
-            appBar: new HeaderBar(title: 'Personal information'),
+            appBar: new HeaderBar(title: 'Personal information'
+            ),
             body: Builder(
               builder: (BuildContext ctx) {
                 return new SingleChildScrollView(

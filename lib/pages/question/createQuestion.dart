@@ -52,7 +52,7 @@ class _QuestionWidgetState extends State<QuestionWidget> {
           value.remove(QuestionConstants.detail),
           value.remove(QuestionConstants.title)
         });
-    popUntilPage(QuestionList());
+    popRouter();
   }
 
   void _takePhoto() {}
@@ -108,7 +108,7 @@ class _QuestionWidgetState extends State<QuestionWidget> {
             ],
           ),
           TextField(
-            maxLines: 10,
+            maxLines: 5,
             controller: detail,
             onChanged: _detailChanged,
             decoration: InputDecoration(
