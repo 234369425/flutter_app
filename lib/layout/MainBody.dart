@@ -70,22 +70,29 @@ class _ApplicationTabBarState extends State<ApplicationTabBar> {
               child: bottomNavigationBar,
             ),
           )),
-      body: new ScrollConfiguration(
-          behavior: MyBehavior(),
-          child: new PageView.builder(
-            itemBuilder: (BuildContext context, int index) =>
-                widget.pages[index].page,
-            controller: pageController,
-            itemCount: pages.length,
-            physics: Platform.isAndroid
-                ? new ClampingScrollPhysics()
-                : new NeverScrollableScrollPhysics(),
-            onPageChanged: (int index) {
-              setState(() {
-                currentIndex = index;
-              });
-            },
-          )),
+      body: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: () {
+          FocusScope.of(context).requestFocus(FocusNode());
+        },
+        child: ScrollConfiguration(
+            behavior: MyBehavior(),
+            child: new PageView.builder(
+              itemBuilder: (BuildContext context, int index) =>
+                  widget.pages[index].page,
+              controller: pageController,
+              itemCount: pages.length,
+              physics: Platform.isAndroid
+                  ? new ClampingScrollPhysics()
+                  : new NeverScrollableScrollPhysics(),
+              onPageChanged: (int index) {
+                setState(() {
+                  FocusScope.of(context).requestFocus(FocusNode());
+                  currentIndex = index;
+                });
+              },
+            )),
+      ),
     );
   }
 }

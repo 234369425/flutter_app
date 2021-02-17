@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/layout/TabBar.dart';
+import 'package:flutter_app/layout/MainBody.dart';
 import 'package:flutter_app/pages/my/MyPage.dart';
 import 'package:flutter_app/pages/question/questionList.dart';
 import 'package:flutter_app/pages/question/createQuestion.dart';
@@ -24,7 +24,7 @@ class _LayoutPageState extends State<ApplicationLayout> {
             Icons.add_circle,
             size: 38,
           ),
-          page: QuestionWidget()),
+          page: QuestionWidget(false)),
       new TabBarModel(
           title: "Me",
           icon: _LoadIcon("assets/images/tab/me_c.webp"),

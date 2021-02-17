@@ -28,7 +28,7 @@ class _ChangeNameState extends State<ChangeGrade> {
 
     final model = Provider.of<GlobalModel>(context, listen: false);
     model.nickName = controller.text;
-    popRouter();
+    popRoute();
   }
 
   @override

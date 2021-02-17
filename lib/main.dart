@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/config/provider_config.dart';
 import 'package:flutter_app/layout/application.dart';
-import 'file:///E:/Application/flutter_app/lib/pages/question/createQuestion.dart';
+import 'package:flutter_app/pages/question/createQuestion.dart';
 import 'package:flutter_app/constants.dart';
 import 'package:flutter_app/pages/login.dart';
 import 'package:flutter_app/provider/global_model.dart';
@@ -19,19 +19,17 @@ class Application extends StatelessWidget {
 
     return new MaterialApp(
       navigatorKey: navGK,
+      title: model.appName,
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      initialRoute: RouterPathConstants.login,
-      onGenerateRoute: (RouteSettings settings) {
-        var routes = <String, WidgetBuilder>{
-          RouterPathConstants.login: (context) => LoginFrame(),
-          RouterPathConstants.index: (context) => ApplicationLayout(),
-          RouterPathConstants.createQuestion: (context) => QuestionWidget()
-        };
-        WidgetBuilder builder = routes[settings.name];
-        return MaterialPageRoute(builder: (ctx) => builder(ctx));
+      routes: {
+        '/': (context) {
+          return model.goToLogin
+              ? ProviderConfig.getInstance().getLoginPage(LoginFrame())
+              : new ApplicationLayout();
+        }
       },
     );
   }

@@ -63,14 +63,14 @@ class _MyPageState extends State<MyPage> {
         isLine: true,
         isRight: true,
         rValue: model.nickName,
-        onPressed: () => routerPush(new ChangeName()),
+        onPressed: () => pushRoute(new ChangeName(model.nickName)),
       ),
       new LabelRow(
         label: 'Grade',
         isLine: true,
         isRight: true,
         rValue: model.grade,
-        onPressed: () => routerPush(new ChangeGrade()),
+        onPressed: () => pushRoute(new ChangeGrade()),
       )
     ];
 

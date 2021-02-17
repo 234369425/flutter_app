@@ -13,6 +13,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class QuestionWidget extends StatefulWidget {
+  bool topButton = false;
+
+  QuestionWidget(this.topButton);
+
   @override
   State<StatefulWidget> createState() => _QuestionWidgetState();
 }
@@ -52,7 +56,9 @@ class _QuestionWidgetState extends State<QuestionWidget> {
           value.remove(QuestionConstants.detail),
           value.remove(QuestionConstants.title)
         });
-    popRouter();
+    if (this.widget.topButton) {
+      popRoute();
+    }
   }
 
   void _takePhoto() {}
@@ -82,6 +88,8 @@ class _QuestionWidgetState extends State<QuestionWidget> {
     super.dispose();
   }
 
+  _dropDownChanged(dynamic v) {}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -107,13 +115,24 @@ class _QuestionWidgetState extends State<QuestionWidget> {
                   onPressed: () => {_showImagePicker(ImageSource.gallery)})
             ],
           ),
-          TextField(
-            maxLines: 5,
-            controller: detail,
-            onChanged: _detailChanged,
-            decoration: InputDecoration(
-                labelText: 'Detail', icon: Icon(Icons.text_snippet)),
-          ),
+          DropdownButton(items: [
+            DropdownMenuItem(
+              child: Text('Math'),
+            ),
+            DropdownMenuItem(
+              child: Text('English'),
+            ),
+          ], onChanged: _dropDownChanged),
+          Padding(
+              padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom),
+              child: TextField(
+                maxLines: 3,
+                controller: detail,
+                onChanged: _detailChanged,
+                decoration: InputDecoration(
+                    labelText: 'Detail', icon: Icon(Icons.text_snippet)),
+              )),
           RaisedButton(onPressed: _submitQuestion, child: Text('Ask'))
         ],
       ),

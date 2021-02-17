@@ -7,6 +7,11 @@ import 'package:flutter_app/utils/route.dart';
 import 'package:provider/provider.dart';
 
 class ChangeName extends StatefulWidget {
+
+  final String name;
+
+  ChangeName(this.name);
+
   @override
   State<StatefulWidget> createState() {
     return _ChangeNameState();
@@ -28,7 +33,15 @@ class _ChangeNameState extends State<ChangeName> {
 
     final model = Provider.of<GlobalModel>(context, listen: false);
     model.nickName = controller.text;
-    popRouter();
+    popRoute();
+  }
+
+
+  @override
+  void initState() {
+    super.initState();
+    controller.text = this.widget.name;
+
   }
 
   @override

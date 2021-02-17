@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/bean/Question.dart';
-import 'package:flutter_app/component/message.dart';
 import 'package:flutter_app/component/ui/header_bar.dart';
 import 'package:flutter_app/db/DBOpera.dart';
-import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_html/style.dart';
 
 class QuestionDetail extends StatefulWidget {
   final Question q;
@@ -82,14 +79,19 @@ class _QuestionDetailState extends State<QuestionDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: new HeaderBar(title: _question.title),
-        body: Column(
-          children: [
-            _createRow(),
-            _createRow(self: true),
-          ],
-        ),
+        body: GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTap: () {
+              FocusScope.of(context).requestFocus(FocusNode());
+            },
+            child: Column(
+              children: [
+                _createRow(),
+                _createRow(self: true),
+              ],
+            )),
         bottomNavigationBar: new BottomAppBar(
-            child: Row(
+            child: ListView(
           children: [
             Expanded(
               flex: 20,
@@ -97,8 +99,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
                 controller: controller,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(8))
-                  ),
+                      borderRadius: BorderRadius.all(Radius.circular(8))),
                 ),
                 style: TextStyle(),
               ),

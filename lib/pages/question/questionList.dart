@@ -20,7 +20,7 @@ class _QuestionListState extends State<QuestionList> {
   final SlidableController slidableController = SlidableController();
 
   void _toAskQuestion() {
-    routerPush(QuestionWidget());
+    pushRoute(QuestionWidget(true));
   }
 
   @override
@@ -46,7 +46,7 @@ class _QuestionListState extends State<QuestionList> {
   }
 
   _showDetail(Question qs) {
-    routerPush(new QuestionDetail(qs));
+    pushRoute(new QuestionDetail(qs));
   }
 
   _doMethod(String action, Question q) {
@@ -124,14 +124,6 @@ class _QuestionListState extends State<QuestionList> {
                 ),
                 child:
                 Container(color: Colors.white, child: _buildRow(q)),
-                actions: <Widget>[
-                  IconSlideAction(
-                    caption: 'Mark',
-                    color: Colors.indigo,
-                    icon: Icons.library_add,
-                    onTap: () => _doMethod('Mark', q),
-                  ),
-                ],
                 secondaryActions: <Widget>[
                   IconSlideAction(
                     caption: 'View',
