@@ -31,7 +31,7 @@ class _ApplicationTabBarState extends State<ApplicationTabBar> {
         new BottomNavigationBarItem(
           icon: model.icon,
           activeIcon: model.selectIcon,
-          title: new Text(model.title, style: new TextStyle(fontSize: 12.0)),
+          label: model.title,
         ),
       );
     }

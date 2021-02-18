@@ -2,20 +2,18 @@ import 'dart:convert';
 import 'dart:io' as IO;
 
 import 'package:flutter/material.dart';
-import 'package:camera/camera.dart';
 import 'package:flutter_app/component/ui/header_bar.dart';
 import 'package:flutter_app/constants.dart';
 import 'package:flutter_app/db/DBOpera.dart';
-import 'package:flutter_app/pages/question/questionList.dart';
 import 'package:flutter_app/utils/route.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class QuestionWidget extends StatefulWidget {
-  bool topButton = false;
+  QuestionWidget({this.topButton});
 
-  QuestionWidget(this.topButton);
+  final bool topButton;
 
   @override
   State<StatefulWidget> createState() => _QuestionWidgetState();
@@ -58,10 +56,10 @@ class _QuestionWidgetState extends State<QuestionWidget> {
         });
     if (this.widget.topButton) {
       popRoute();
+    } else {
+      popRoute();
     }
   }
-
-  void _takePhoto() {}
 
   _showImagePicker(ImageSource source) async {
     var image = await picker.getImage(source: source);

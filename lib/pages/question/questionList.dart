@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/component/ui/header_bar.dart';
-import 'package:flutter_app/constants.dart';
 import 'package:flutter_app/db/DBOpera.dart';
 import 'package:flutter_app/bean/Question.dart';
 import 'package:flutter_app/pages/question/QuestionDetail.dart';
@@ -20,7 +19,7 @@ class _QuestionListState extends State<QuestionList> {
   final SlidableController slidableController = SlidableController();
 
   void _toAskQuestion() {
-    pushRoute(QuestionWidget(true));
+    pushRoute(QuestionWidget(topButton: true));
   }
 
   @override
@@ -28,12 +27,19 @@ class _QuestionListState extends State<QuestionList> {
     super.initState();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    print('dispose');
+  }
+
+
   Widget _buildRow(Question q) {
     ListTile tile = ListTile(
         title: Text(q.title),
         leading: CircleAvatar(
           backgroundColor:
-          q.newMessage == 0 ? Colors.indigoAccent : Colors.grey,
+              q.newMessage == 0 ? Colors.indigoAccent : Colors.grey,
           child: Text(q.newMessage.toString()),
           foregroundColor: Colors.white,
         ),
@@ -72,20 +78,20 @@ class _QuestionListState extends State<QuestionList> {
         builder: (context, snapshot) {
           return snapshot.hasData
               ? new ListView.builder(
-            padding: const EdgeInsets.all(10.0),
-            itemCount: snapshot.data.length,
-            itemBuilder: (context, i) {
-              var q = snapshot.data[i];
-              return Slidable(
-                actionPane: SlidableDrawerActionPane(),
-                actionExtentRatio: 0.25,
-                key: Key(q.id.toString()),
-                controller: slidableController,
-                closeOnScroll: true,
-                dismissal: SlidableDismissal(
-                  child: SlidableDrawerDismissal(),
-                  onDismissed: (actionType) {
-                    /**
+                  padding: const EdgeInsets.all(10.0),
+                  itemCount: snapshot.data.length,
+                  itemBuilder: (context, i) {
+                    var q = snapshot.data[i];
+                    return Slidable(
+                      actionPane: SlidableDrawerActionPane(),
+                      actionExtentRatio: 0.25,
+                      key: Key(q.id.toString()),
+                      controller: slidableController,
+                      closeOnScroll: true,
+                      dismissal: SlidableDismissal(
+                        child: SlidableDrawerDismissal(),
+                        onDismissed: (actionType) {
+                          /**
                         _showSnack(
                         context,
                         actionType == SlideActionType.primary
@@ -94,56 +100,56 @@ class _QuestionListState extends State<QuestionList> {
                         setState(() {
                         list.removeAt(index);
                         });**/
-                    setState(() {
-                      snapshot.data.removeAt(i);
-                    });
-                  },
-                  onWillDismiss: (actionType) {
-                    return showDialog<bool>(
-                      context: context,
-                      builder: (context) {
-                        return AlertDialog(
-                          title: Text('Delete'),
-                          content: Text('Item will be deleted'),
-                          actions: <Widget>[
-                            FlatButton(
-                              child: Text('Cancel'),
-                              onPressed: () =>
-                                  Navigator.of(context).pop(false),
-                            ),
-                            FlatButton(
-                              child: Text('Ok'),
-                              onPressed: () =>
-                                  Navigator.of(context).pop(true),
-                            ),
-                          ],
-                        );
-                      },
+                          setState(() {
+                            snapshot.data.removeAt(i);
+                          });
+                        },
+                        onWillDismiss: (actionType) {
+                          return showDialog<bool>(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: Text('Delete'),
+                                content: Text('Item will be deleted'),
+                                actions: <Widget>[
+                                  FlatButton(
+                                    child: Text('Cancel'),
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(false),
+                                  ),
+                                  FlatButton(
+                                    child: Text('Ok'),
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(true),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                      ),
+                      child:
+                          Container(color: Colors.white, child: _buildRow(q)),
+                      secondaryActions: <Widget>[
+                        IconSlideAction(
+                          caption: 'View',
+                          color: Colors.black45,
+                          icon: Icons.more_horiz,
+                          onTap: () => _showDetail(q),
+                        ),
+                        IconSlideAction(
+                          caption: 'Delete',
+                          color: Colors.red,
+                          icon: Icons.delete,
+                          onTap: () => _doMethod('Delete', q),
+                        ),
+                      ],
                     );
                   },
-                ),
-                child:
-                Container(color: Colors.white, child: _buildRow(q)),
-                secondaryActions: <Widget>[
-                  IconSlideAction(
-                    caption: 'View',
-                    color: Colors.black45,
-                    icon: Icons.more_horiz,
-                    onTap: () => _showDetail(q),
-                  ),
-                  IconSlideAction(
-                    caption: 'Delete',
-                    color: Colors.red,
-                    icon: Icons.delete,
-                    onTap: () => _doMethod('Delete', q),
-                  ),
-                ],
-              );
-            },
-          )
+                )
               : Center(
-            child: CircularProgressIndicator(),
-          );
+                  child: CircularProgressIndicator(),
+                );
         },
       ),
     );

@@ -24,10 +24,14 @@ class Frame extends State<LoginFrame> {
 
   final TextEditingController userName = TextEditingController();
   final TextEditingController password = TextEditingController();
+
   final Future<SharedPreferences> pref = SharedPreferences.getInstance();
 
   void _submit() {
     //todo validate input text
+    if(userName.value == ''){
+
+    }
     pushAndRemoveRoute(ApplicationLayout());
   }
 

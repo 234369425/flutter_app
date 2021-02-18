@@ -24,14 +24,14 @@ class _LayoutPageState extends State<ApplicationLayout> {
             Icons.add_circle,
             size: 38,
           ),
-          page: QuestionWidget(false)),
+          page: QuestionWidget(topButton: false)),
       new TabBarModel(
           title: "Me",
           icon: _LoadIcon("assets/images/tab/me_c.webp"),
           selectIcon: _LoadIcon("assets/images/tab/me_s.webp"),
           page: MyPage())
     ];
-    return new Scaffold(body: new ApplicationTabBar(pages: pages));
+    return Scaffold(body: new ApplicationTabBar(pages: pages));
   }
 }
 

@@ -91,7 +91,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
               ],
             )),
         bottomNavigationBar: new BottomAppBar(
-            child: ListView(
+            child: Row(
           children: [
             Expanded(
               flex: 20,

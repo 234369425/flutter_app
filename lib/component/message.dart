@@ -38,39 +38,6 @@ class Message extends StatefulWidget {
     return content;
   }
 
-  String _buildChildren() {
-    String html = '<div>';
-    html += '<table>';
-    html += '<tr>';
-
-    /**
-        if (!self) {
-        list.add(Container(
-        width: 50,
-        ));
-        }
-
-
-        list.add(Container(
-        width: 600,
-        child: ListView(
-        children: _buildContent(),
-        ),
-        ));*/
-
-    /**
-        if (self) {
-        list.add(Container(
-        width: 50,
-        ));
-        }
-     */
-    html += '</tr>';
-    html += '</table>';
-    html += '</div>';
-    return html;
-  }
-
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -79,10 +46,7 @@ class Message extends StatefulWidget {
 }
 
 class _MessageState extends State<Message> {
-  bool _isVoice = false;
-  bool _isMore = false;
   double keyboardHeight = 270.0;
-  bool _emojiState = false;
   String newGroupName;
 
   @override
