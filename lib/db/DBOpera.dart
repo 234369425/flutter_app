@@ -17,7 +17,7 @@ class DBOperator {
             'create_time TIMESTAMP default (datetime(\'now\', \'localtime\')),'
             'new_message INTEGER default 0)');
 
-        db.execute('create table Answer('
+        db.execute('create table Relay('
             'id INTEGER PRIMARY KEY autoincrement,'
             'question_id INTEGER,'
             'user_id INTEGER,'

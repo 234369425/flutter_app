@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/bean/Question.dart';
+import 'package:flutter_app/bean/Relay.dart';
 import 'package:flutter_app/component/ui/header_bar.dart';
 import 'package:flutter_app/db/DBOpera.dart';
+import 'package:flutter_app/utils/system.dart';
 
 class QuestionDetail extends StatefulWidget {
   final Question q;
@@ -18,6 +20,8 @@ class _QuestionDetailState extends State<QuestionDetail> {
   final DBOperator dbOperator = new DBOperator();
   Question _question = Question(-1, "loading", "loading", 2);
   TextEditingController controller = new TextEditingController();
+  ScrollController scrollController = new ScrollController();
+  var relays = <Relay>[];
 
   _QuestionDetailState(int id) {
     dbOperator.viewQuestion(id).then((value) => {
@@ -27,7 +31,8 @@ class _QuestionDetailState extends State<QuestionDetail> {
         });
   }
 
-  _createRow({bool self = false}) {
+  _createRow(int index) {
+    Relay q = relays[index];
     return Row(
       children: [
         Expanded(
@@ -35,7 +40,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
           child: Padding(
               padding: EdgeInsets.fromLTRB(10, 5, 10, 160.0),
               child: Container(
-                child: self
+                child: q.userId == null
                     ? Text('')
                     : new Image.asset('assets/images/def_head_portrait.png',
                         fit: BoxFit.cover, gaplessPlayback: true),
@@ -46,7 +51,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
             child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(5),
-                  gradient: self
+                  gradient: q.userId == null
                       ? LinearGradient(
                           colors: [Colors.lightGreen, Colors.lightGreen])
                       : LinearGradient(
@@ -64,7 +69,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
             child: Padding(
                 padding: EdgeInsets.fromLTRB(10, 5, 10, 160.0),
                 child: Container(
-                  child: self
+                  child: q.userId != null
                       ? new Image.asset('assets/images/def_head_portrait.png',
                           fit: BoxFit.cover, gaplessPlayback: true)
                       : Text(''),
@@ -84,34 +89,37 @@ class _QuestionDetailState extends State<QuestionDetail> {
             onTap: () {
               FocusScope.of(context).requestFocus(FocusNode());
             },
-            child: Column(
-              children: [
-                _createRow(),
-                _createRow(self: true),
-              ],
+            child: ListView.builder(
+              itemCount: relays.length,
+              itemBuilder: (context, i) => _createRow(i),
+              controller: scrollController,
+              padding: SystemUtil.keyBoardHeight(context),
             )),
         bottomNavigationBar: new BottomAppBar(
-            child: Row(
-          children: [
-            Expanded(
-              flex: 20,
-              child: TextField(
-                controller: controller,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(8))),
+            child: SystemUtil.wrapperPadding(
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 20,
+                      child: TextField(
+                        controller: controller,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(8))),
+                        ),
+                        style: TextStyle(),
+                      ),
+                    ),
+                    Expanded(
+                        flex: 5,
+                        child: IconButton(
+                          icon: Icon(Icons.add),
+                          onPressed: _addPressed,
+                        ))
+                  ],
                 ),
-                style: TextStyle(),
-              ),
-            ),
-            Expanded(
-                flex: 5,
-                child: IconButton(
-                  icon: Icon(Icons.add),
-                  onPressed: _addPressed,
-                ))
-          ],
-        )));
+                context)));
   }
 
   @override

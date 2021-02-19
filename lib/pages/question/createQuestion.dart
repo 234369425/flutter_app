@@ -6,6 +6,7 @@ import 'package:flutter_app/component/ui/header_bar.dart';
 import 'package:flutter_app/constants.dart';
 import 'package:flutter_app/db/DBOpera.dart';
 import 'package:flutter_app/utils/route.dart';
+import 'package:flutter_app/utils/system.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -91,49 +92,48 @@ class _QuestionWidgetState extends State<QuestionWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: new HeaderBar(title: 'Create New Question'),
-      body: Column(
-        children: [
-          TextField(
-            controller: title,
-            onChanged: _titleChanged,
-            decoration: InputDecoration(
-              labelText: 'Problem Description ',
-              icon: Icon(Icons.question_answer_outlined),
+        appBar: new HeaderBar(title: 'Create New Question'),
+        body: SystemUtil.wrapperPadding(
+            Column(
+              children: [
+                TextField(
+                  controller: title,
+                  onChanged: _titleChanged,
+                  decoration: InputDecoration(
+                    labelText: 'Problem Description ',
+                    icon: Icon(Icons.question_answer_outlined),
+                  ),
+                ),
+                ButtonBar(
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.camera_alt_outlined),
+                      onPressed: () => {_showImagePicker(ImageSource.camera)},
+                    ),
+                    IconButton(
+                        icon: Icon(Icons.photo),
+                        onPressed: () =>
+                            {_showImagePicker(ImageSource.gallery)})
+                  ],
+                ),
+                DropdownButton(items: [
+                  DropdownMenuItem(
+                    child: Text('Math'),
+                  ),
+                  DropdownMenuItem(
+                    child: Text('English'),
+                  ),
+                ], onChanged: _dropDownChanged),
+                TextField(
+                  maxLines: 8,
+                  controller: detail,
+                  onChanged: _detailChanged,
+                  decoration: InputDecoration(
+                      labelText: 'Detail', icon: Icon(Icons.text_snippet)),
+                ),
+                RaisedButton(onPressed: _submitQuestion, child: Text('Ask'))
+              ],
             ),
-          ),
-          ButtonBar(
-            children: [
-              IconButton(
-                icon: Icon(Icons.camera_alt_outlined),
-                onPressed: () => {_showImagePicker(ImageSource.camera)},
-              ),
-              IconButton(
-                  icon: Icon(Icons.photo),
-                  onPressed: () => {_showImagePicker(ImageSource.gallery)})
-            ],
-          ),
-          DropdownButton(items: [
-            DropdownMenuItem(
-              child: Text('Math'),
-            ),
-            DropdownMenuItem(
-              child: Text('English'),
-            ),
-          ], onChanged: _dropDownChanged),
-          Padding(
-              padding: EdgeInsets.only(
-                  bottom: MediaQuery.of(context).viewInsets.bottom),
-              child: TextField(
-                maxLines: 3,
-                controller: detail,
-                onChanged: _detailChanged,
-                decoration: InputDecoration(
-                    labelText: 'Detail', icon: Icon(Icons.text_snippet)),
-              )),
-          RaisedButton(onPressed: _submitQuestion, child: Text('Ask'))
-        ],
-      ),
-    );
+            context));
   }
 }
