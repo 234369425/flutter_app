@@ -1,8 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_app/component/ui/header_bar.dart';
+import 'package:flutter_app/constants/urls.dart';
 import 'package:flutter_app/utils/route.dart';
 import 'package:flutter_app/utils/system.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart' as http;
 
 class Register extends StatefulWidget {
   @override
@@ -19,31 +23,56 @@ class _RegisterState extends State<Register> {
 
   var teacher = false;
 
-  _checkUserName(dynamic v) {
-    print(v);
-  }
-
   _submit() {
     if (userName.value.text.trim() == "") {
       Fluttertoast.showToast(
           gravity: ToastGravity.TOP,
-          msg: "user name is empty",
+          msg: "用户名不能为空！",
           timeInSecForIosWeb: 1,
           backgroundColor: Colors.red,
           textColor: Colors.white);
       userNameFocus.requestFocus();
       return;
     }
-    if(password.value.text.trim() == ""){
+    if (password.value.text.trim() == "") {
       Fluttertoast.showToast(
           gravity: ToastGravity.TOP,
-          msg: "password is empty",
+          msg: "密码不能为空！",
           timeInSecForIosWeb: 1,
           backgroundColor: Colors.red,
           textColor: Colors.white);
       passwordFocus.requestFocus();
     }
+    _send((rs) {
+      var resp = jsonDecode(rs);
+      if(resp["code"] == 0){
+        popRoute();
+      }else{
+        Fluttertoast.showToast(
+            gravity: ToastGravity.TOP,
+            msg: resp["msg"],
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.white);
+      }
+    }, () {
+      Fluttertoast.showToast(msg: "连接服务器失败，请稍后尝试！");
+    });
+  }
 
+  _send(success, fail) async {
+    try {
+      var response = await http.post(url_register,
+          body: jsonEncode(<String, String>{
+            'name': userName.value.text,
+            'password': password.value.text,
+            'teacher': teacher ? "1" : "0"
+          }));
+      success(response.body);
+      print(response);
+    } catch (e) {
+      fail();
+    }
   }
 
   _loginPage() {
@@ -54,7 +83,7 @@ class _RegisterState extends State<Register> {
   Widget build(BuildContext context) {
     SystemUtil.hideSoftKeyBoard(context);
     return Scaffold(
-      appBar: new HeaderBar(title: 'Register'),
+      appBar: new HeaderBar(title: '注册'),
       body: Column(
         children: [
           TextField(
@@ -62,15 +91,14 @@ class _RegisterState extends State<Register> {
             controller: userName,
             focusNode: userNameFocus,
             decoration: InputDecoration(
-              labelText: 'user name',
+              labelText: '用户名',
               icon: Icon(Icons.supervised_user_circle_rounded),
             ),
-            onChanged: _checkUserName,
           ),
           Row(
             children: [
               Icon(Icons.accessibility_new_sharp),
-              Text('     teacher'),
+              Text('     教师'),
               Switch(
                   value: teacher,
                   onChanged: (v) {
@@ -85,20 +113,19 @@ class _RegisterState extends State<Register> {
             controller: password,
             focusNode: passwordFocus,
             decoration: InputDecoration(
-                labelText: 'password', icon: Icon(Icons.lock_outline)),
+                labelText: '密码', icon: Icon(Icons.lock_outline)),
           ),
           Row(
             children: [
               SystemUtil.emptyExpanded(4),
               Expanded(
                   flex: 4,
-                  child:
-                      RaisedButton(onPressed: _submit, child: Text('Submit'))),
+                  child: RaisedButton(onPressed: _submit, child: Text('注册'))),
               SystemUtil.emptyExpanded(2),
               Expanded(
                   flex: 4,
-                  child: RaisedButton(
-                      onPressed: _loginPage, child: Text('To login'))),
+                  child:
+                      RaisedButton(onPressed: _loginPage, child: Text('返回'))),
               SystemUtil.emptyExpanded(4),
             ],
           )
