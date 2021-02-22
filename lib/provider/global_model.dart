@@ -10,7 +10,7 @@ class GlobalModel extends ChangeNotifier {
   /// 用户信息
   String account = '';
   String nickName = 'nickName';
-  String headPortrait = '';
+  String head = '';
   String grade = '';
   int gender = 0;
 

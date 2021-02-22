@@ -34,7 +34,7 @@ class _MyPageState extends State<MyPage> {
     }
     String headPortrait = await compressToString(File(image.path));
     showToast(context, 'success ');
-    _model.headPortrait = headPortrait;
+    _model.head = headPortrait;
     _model.refresh();
   }
 
@@ -51,9 +51,9 @@ class _MyPageState extends State<MyPage> {
           height: 55.0,
           child: new ClipRRect(
             borderRadius: BorderRadius.all(Radius.circular(5.0)),
-            child: model.headPortrait == null || model.headPortrait == ''
+            child: model.head == null || model.head == ''
                 ? new Image.asset(headPortrait, fit: BoxFit.cover)
-                : dynamicAvatar(model.headPortrait),
+                : dynamicAvatar(model.head),
           ),
         ),
         onPressed: () => _openGallery(),

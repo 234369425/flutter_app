@@ -12,7 +12,7 @@ class GlobalAuth {
   }
 
   Future getHeadPortrait() async {
-    _model.headPortrait = await Shared.instance.getString(userHeader);
+    _model.head = await Shared.instance.getString(userHeader);
   }
 
   Future getGender() async {

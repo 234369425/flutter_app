@@ -5,6 +5,7 @@ import 'package:flutter_app/component/ui/header_bar.dart';
 import 'package:flutter_app/constants/urls.dart';
 import 'package:flutter_app/utils/route.dart';
 import 'package:flutter_app/utils/system.dart';
+import 'package:flutter_app/utils/toast.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
@@ -25,22 +26,12 @@ class _RegisterState extends State<Register> {
 
   _submit() {
     if (userName.value.text.trim() == "") {
-      Fluttertoast.showToast(
-          gravity: ToastGravity.TOP,
-          msg: "用户名不能为空！",
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white);
+      FtToast.danger("用户不能为空！");
       userNameFocus.requestFocus();
       return;
     }
     if (password.value.text.trim() == "") {
-      Fluttertoast.showToast(
-          gravity: ToastGravity.TOP,
-          msg: "密码不能为空！",
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white);
+      FtToast.danger("密码不能为空！");
       passwordFocus.requestFocus();
     }
     _send((rs) {
@@ -48,12 +39,12 @@ class _RegisterState extends State<Register> {
       if(resp["code"] == 0){
         popRoute();
       }else{
-        Fluttertoast.showToast(
-            gravity: ToastGravity.TOP,
-            msg: resp["msg"],
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.white);
+        var msg = "服务器内部错误";
+        if(resp["code"] == 501) {
+          msg = "用户已存在";
+        }
+        FtToast.danger(msg);
+        print('error');
       }
     }, () {
       Fluttertoast.showToast(msg: "连接服务器失败，请稍后尝试！");
