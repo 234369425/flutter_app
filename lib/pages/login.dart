@@ -3,16 +3,19 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/component/ui/header_bar.dart';
 import 'package:flutter_app/constants.dart';
+import 'package:flutter_app/constants/defaults.dart';
 import 'package:flutter_app/constants/urls.dart';
 import 'package:flutter_app/layout/application.dart';
 import 'package:flutter_app/pages/register.dart';
 import 'package:flutter_app/provider/login_model.dart';
 import 'package:flutter_app/utils/route.dart';
+import 'package:flutter_app/utils/shared_util.dart';
 import 'package:flutter_app/utils/system.dart';
 import 'package:flutter_app/utils/toast.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'dart:io' as IO;
 
 class LoginFrame extends StatefulWidget {
   @override
@@ -35,7 +38,7 @@ class Frame extends State<LoginFrame> {
   final TextEditingController password = TextEditingController();
   final FocusNode passwordFocus = FocusNode();
   final FocusNode userNameFocus = FocusNode();
-  var LoginModel model;
+  LoginModel model;
 
   final Future<SharedPreferences> pref = SharedPreferences.getInstance();
 
@@ -59,13 +62,16 @@ class Frame extends State<LoginFrame> {
         var role = resp['data']['role'];
         var head = resp['data']['head'];
         var grade = resp['data']['grade'];
-
-
-
+        var shared = Shared.instance;
+        shared.setAccount(userName.text.trim());
+        shared.saveString("head", head);
+        shared.saveString("grade", grade);
+        shared.saveString("role", role);
+        pushAndRemoveRoute(ApplicationLayout());
       } else {
         FtToast.danger('用户名或密码错误！');
       }
-    }, (){
+    }, () {
       FtToast.danger('服务器内部错误，请稍后再试！');
     });
   }
@@ -113,16 +119,15 @@ class Frame extends State<LoginFrame> {
                 controller: password,
                 focusNode: passwordFocus,
                 decoration: InputDecoration(
-                    labelText: '密码',
-                    icon: Icon(Icons.lock_outline_sharp)),
+                    labelText: '密码', icon: Icon(Icons.lock_outline_sharp)),
               ),
               Row(
                 children: [
                   SystemUtil.emptyExpanded(4),
                   Expanded(
                       flex: 4,
-                      child: RaisedButton(
-                          onPressed: _submit, child: Text('登陆'))),
+                      child:
+                          RaisedButton(onPressed: _submit, child: Text('登陆'))),
                   SystemUtil.emptyExpanded(2),
                   Expanded(
                       flex: 4,

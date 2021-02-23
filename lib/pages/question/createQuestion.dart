@@ -92,7 +92,8 @@ class _QuestionWidgetState extends State<QuestionWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: new HeaderBar(title: 'Create New Question'),
+        resizeToAvoidBottomInset: false,
+        appBar: new HeaderBar(title: '新建问题'),
         body: SystemUtil.wrapperPadding(
             Column(
               children: [
@@ -100,7 +101,7 @@ class _QuestionWidgetState extends State<QuestionWidget> {
                   controller: title,
                   onChanged: _titleChanged,
                   decoration: InputDecoration(
-                    labelText: 'Problem Description ',
+                    labelText: '问题简述',
                     icon: Icon(Icons.question_answer_outlined),
                   ),
                 ),
@@ -118,10 +119,10 @@ class _QuestionWidgetState extends State<QuestionWidget> {
                 ),
                 DropdownButton(items: [
                   DropdownMenuItem(
-                    child: Text('Math'),
+                    child: Text('数学'),
                   ),
                   DropdownMenuItem(
-                    child: Text('English'),
+                    child: Text('英语'),
                   ),
                 ], onChanged: _dropDownChanged),
                 TextField(
@@ -129,7 +130,7 @@ class _QuestionWidgetState extends State<QuestionWidget> {
                   controller: detail,
                   onChanged: _detailChanged,
                   decoration: InputDecoration(
-                      labelText: 'Detail', icon: Icon(Icons.text_snippet)),
+                      labelText: '详细描述', icon: Icon(Icons.text_snippet)),
                 ),
                 RaisedButton(onPressed: _submitQuestion, child: Text('Ask'))
               ],

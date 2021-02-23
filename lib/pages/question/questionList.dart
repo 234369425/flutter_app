@@ -8,7 +8,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_app/utils/route.dart';
 
 class QuestionList extends StatefulWidget {
-  final String title = "Welcome ";
+  final String title = "欢迎 ";
 
   @override
   _QuestionListState createState() => _QuestionListState();
@@ -19,7 +19,11 @@ class _QuestionListState extends State<QuestionList> {
   final SlidableController slidableController = SlidableController();
 
   void _toAskQuestion() {
-    pushRoute(QuestionWidget(topButton: true));
+    pushRoute(QuestionWidget(topButton: true), callback: () {
+      setState(() {
+        print('refresh state');
+      });
+    });
   }
 
   @override
@@ -32,7 +36,6 @@ class _QuestionListState extends State<QuestionList> {
     super.dispose();
     print('dispose');
   }
-
 
   Widget _buildRow(Question q) {
     ListTile tile = ListTile(
@@ -52,7 +55,11 @@ class _QuestionListState extends State<QuestionList> {
   }
 
   _showDetail(Question qs) {
-    pushRoute(new QuestionDetail(qs));
+    pushRoute(new QuestionDetail(qs), callback: () {
+        setState(() {
+          print('refresh state');
+        });
+    });
   }
 
   _doMethod(String action, Question q) {
@@ -65,7 +72,7 @@ class _QuestionListState extends State<QuestionList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: new HeaderBar(title: 'Question list', rightDMActions: [
+      appBar: new HeaderBar(title: '问题列表', rightDMActions: [
         IconButton(
           icon: Icon(Icons.add),
           color: Colors.blueAccent,

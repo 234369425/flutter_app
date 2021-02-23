@@ -2,14 +2,16 @@ import 'package:flutter/cupertino.dart';
 
 final navGK = new GlobalKey<NavigatorState>();
 
-Future<dynamic> pushRoute(Widget widget) {
+Future<dynamic> pushRoute(Widget widget, {dynamic callback}) {
   final route = new CupertinoPageRoute(
     builder: (BuildContext context) => widget,
     settings: new RouteSettings(
       name: widget.toStringShort(),
     ),
   );
-  return navGK.currentState.push(route);
+  return navGK.currentState.push(route).then((value) => {
+        if (callback != null) {callback()}
+      });
 }
 
 pushAndRemoveRoute(Widget widget) {

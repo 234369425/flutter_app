@@ -19,6 +19,10 @@ class Shared {
     return _instance;
   }
 
+  void setAccount(String user) async {
+    prefs.then((value) => value.setString("user", user));
+  }
+
   Future<String> getAccount() async {
     return prefs.then((v) => v.getString("user"));
   }

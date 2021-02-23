@@ -43,7 +43,7 @@ class _MyPageState extends State<MyPage> {
 
     var content = [
       new LabelRow(
-        label: 'Header',
+        label: '头像',
         isLine: true,
         isRight: true,
         rightW: new SizedBox(
@@ -59,14 +59,14 @@ class _MyPageState extends State<MyPage> {
         onPressed: () => _openGallery(),
       ),
       new LabelRow(
-        label: 'Name',
+        label: '名字',
         isLine: true,
         isRight: true,
         rValue: model.nickName,
         onPressed: () => pushRoute(new ChangeName(model.nickName)),
       ),
       new LabelRow(
-        label: 'Grade',
+        label: '班级',
         isLine: true,
         isRight: true,
         rValue: model.grade,
