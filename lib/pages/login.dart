@@ -67,6 +67,7 @@ class Frame extends State<LoginFrame> {
         shared.saveString("head", head);
         shared.saveString("grade", grade);
         shared.saveString("role", role);
+        shared.saveString("displayName", resp['data']['displayName']);
         pushAndRemoveRoute(ApplicationLayout());
       } else {
         FtToast.danger('用户名或密码错误！');
@@ -79,6 +80,7 @@ class Frame extends State<LoginFrame> {
   _send(success, fail) async {
     try {
       var response = await http.post(url_login,
+
           body: jsonEncode(<String, String>{
             'name': userName.value.text,
             'password': password.value.text

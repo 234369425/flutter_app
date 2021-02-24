@@ -23,11 +23,11 @@ class _ChangeNameState extends State<ChangeName> {
 
   _saveName() {
     if (controller.text == null || controller.text == "") {
-      showToast(context, "empty user name");
+      showToast(context, "空用户名");
       return;
     }
     if (controller.text.length > 10) {
-      showToast(context, "too long");
+      showToast(context, "用户名过长");
       return;
     }
 
@@ -48,7 +48,7 @@ class _ChangeNameState extends State<ChangeName> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: appBarColor,
-        appBar: new HeaderBar(title: 'Change Name', rightDMActions: [
+        appBar: new HeaderBar(title: '修改显示名', rightDMActions: [
           IconButton(icon: Icon(Icons.save), onPressed: _saveName)
         ]),
         body: Column(

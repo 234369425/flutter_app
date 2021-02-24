@@ -8,13 +8,17 @@ import 'package:flutter_app/component/ui/header_bar.dart';
 import 'package:flutter_app/component/ui/label_row.dart';
 import 'package:flutter_app/constants/color.dart';
 import 'package:flutter_app/constants/defaults.dart';
+import 'package:flutter_app/pages/login.dart';
 import 'package:flutter_app/pages/my/ChangeGrade.dart';
 import 'package:flutter_app/pages/my/ChangeName.dart';
 import 'package:flutter_app/provider/global_model.dart';
+import 'package:flutter_app/provider/login_model.dart';
 import 'package:flutter_app/utils/Image.dart';
 import 'package:flutter_app/utils/Network.dart';
 import 'package:flutter_app/utils/cache.dart';
 import 'package:flutter_app/utils/route.dart';
+import 'package:flutter_app/utils/shared_util.dart';
+import 'package:flutter_app/utils/toast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
@@ -25,21 +29,37 @@ class MyPage extends StatefulWidget {
 
 class _MyPageState extends State<MyPage> {
   final ImagePicker picker = ImagePicker();
+  var shared = Shared.instance;
+  var name ;
   GlobalModel _model;
 
   _openGallery({type = ImageSource.gallery}) async {
-    var image = await picker.getImage(source: type);
+    var image;
+    try {
+      image = await picker.getImage(source: type);
+    } catch (e) {
+      FtToast.danger("请授予相机相册访问权限！");
+      return;
+    }
     if (image == null) {
       return;
     }
     String headPortrait = await compressToString(File(image.path));
     showToast(context, 'success ');
+
     _model.head = headPortrait;
     _model.refresh();
   }
 
+  _loadInfo() async{
+    await shared.getString("displayName");
+  }
+
   Widget _body(GlobalModel model) {
     _model = model;
+    shared.getString("displayName").then((value) => this.setState(() {
+      name = value;
+    }));
 
     var content = [
       new LabelRow(
@@ -62,8 +82,8 @@ class _MyPageState extends State<MyPage> {
         label: '名字',
         isLine: true,
         isRight: true,
-        rValue: model.nickName,
-        onPressed: () => pushRoute(new ChangeName(model.nickName)),
+        rValue: name,
+        onPressed: () => pushRoute(new ChangeName(name)),
       ),
       new LabelRow(
         label: '班级',
@@ -71,7 +91,7 @@ class _MyPageState extends State<MyPage> {
         isRight: true,
         rValue: model.grade,
         onPressed: () => pushRoute(new ChangeGrade()),
-      )
+      ),
     ];
 
     return new Column(children: content);
@@ -97,13 +117,19 @@ class _MyPageState extends State<MyPage> {
         create: (context) => GlobalModel(),
         child: new Scaffold(
             backgroundColor: appBarColor,
-            appBar: new HeaderBar(title: 'Personal information'
-            ),
+            appBar: new HeaderBar(title: '个人资料'
+                ''),
             body: Builder(
               builder: (BuildContext ctx) {
                 return new SingleChildScrollView(
                     child: _body(ctx.watch<GlobalModel>()));
               },
-            )));
+            ),
+            bottomNavigationBar: Row(
+              children: [
+                Expanded(child: RaisedButton(child:Text('退出登陆'),onPressed: () => pushAndRemoveRoute(new LoginFrame()),))
+              ],
+            )
+        ));
   }
 }

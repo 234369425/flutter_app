@@ -19,8 +19,10 @@ class Register extends StatefulWidget {
 class _RegisterState extends State<Register> {
   final TextEditingController userName = TextEditingController();
   final TextEditingController password = TextEditingController();
+  final TextEditingController displayName = TextEditingController();
   final FocusNode passwordFocus = FocusNode();
   final FocusNode userNameFocus = FocusNode();
+  final FocusNode displayNameFocus = FocusNode();
 
   var teacher = false;
 
@@ -34,13 +36,17 @@ class _RegisterState extends State<Register> {
       FtToast.danger("密码不能为空！");
       passwordFocus.requestFocus();
     }
+    if (displayName.value.text.trim() == "") {
+      FtToast.danger("显示名不能为空");
+      displayNameFocus.requestFocus();
+    }
     _send((rs) {
       var resp = jsonDecode(rs);
-      if(resp["code"] == 0){
+      if (resp["code"] == 0) {
         popRoute();
-      }else{
+      } else {
         var msg = "服务器内部错误";
-        if(resp["code"] == 501) {
+        if (resp["code"] == 501) {
           msg = "用户已存在";
         }
         FtToast.danger(msg);
@@ -56,6 +62,7 @@ class _RegisterState extends State<Register> {
       var response = await http.post(url_register,
           body: jsonEncode(<String, String>{
             'name': userName.value.text,
+            'displayName': displayName.value.text,
             'password': password.value.text,
             'teacher': teacher ? "1" : "0"
           }));
@@ -84,6 +91,15 @@ class _RegisterState extends State<Register> {
             decoration: InputDecoration(
               labelText: '用户名',
               icon: Icon(Icons.supervised_user_circle_rounded),
+            ),
+          ),
+          TextField(
+            keyboardType: TextInputType.text,
+            controller: displayName,
+            focusNode: displayNameFocus,
+            decoration: InputDecoration(
+              labelText: '显示名',
+              icon: Icon(Icons.accessibility_new),
             ),
           ),
           Row(
