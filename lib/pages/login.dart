@@ -39,6 +39,7 @@ class Frame extends State<LoginFrame> {
   final FocusNode passwordFocus = FocusNode();
   final FocusNode userNameFocus = FocusNode();
   LoginModel model;
+  var loading = false;
 
   final Future<SharedPreferences> pref = SharedPreferences.getInstance();
 
@@ -55,6 +56,9 @@ class Frame extends State<LoginFrame> {
       return;
     }
 
+    this.setState(() {
+      this.loading = true;
+    });
     _send((rs) {
       //pushAndRemoveRoute(ApplicationLayout());
       var resp = jsonDecode(rs);
@@ -72,19 +76,26 @@ class Frame extends State<LoginFrame> {
       } else {
         FtToast.danger('用户名或密码错误！');
       }
+      this.setState(() {
+        this.loading = false;
+      });
     }, () {
-      FtToast.danger('服务器内部错误，请稍后再试！');
+      FtToast.danger('无法连接服务器，请稍后再试！');
+      this.setState(() {
+        this.loading = false;
+      });
     });
   }
 
   _send(success, fail) async {
     try {
       var response = await http.post(url_login,
-
           body: jsonEncode(<String, String>{
             'name': userName.value.text,
             'password': password.value.text
-          }));
+          }),
+          encoding: Encoding.getByName("utf8"));
+
       success(response.body);
       print(response);
     } catch (e) {
@@ -128,13 +139,19 @@ class Frame extends State<LoginFrame> {
                   SystemUtil.emptyExpanded(4),
                   Expanded(
                       flex: 4,
-                      child:
-                          RaisedButton(onPressed: _submit, child: Text('登陆'))),
+                      child: !loading
+                          ? RaisedButton(
+                              onPressed: _submit,
+                              child: Text('登陆'),
+                            )
+                          : RaisedButton(child: Text('登录中...'))),
                   SystemUtil.emptyExpanded(2),
                   Expanded(
                       flex: 4,
-                      child: RaisedButton(
-                          onPressed: _register, child: Text('注册'))),
+                      child: !loading
+                          ? RaisedButton(
+                              onPressed: _register, child: Text('注册'))
+                          : RaisedButton(child: Text('注册'))),
                   SystemUtil.emptyExpanded(4),
                 ],
               )
