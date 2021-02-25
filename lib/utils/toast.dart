@@ -4,7 +4,12 @@ import 'package:fluttertoast/fluttertoast.dart';
 class FtToast {
 
   static warning(String msg){
-    Fluttertoast.showToast(msg: msg);
+    Fluttertoast.showToast(
+        gravity: ToastGravity.CENTER,
+        msg: msg,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.yellow,
+        textColor: Colors.black);
   }
 
   static danger(String msg){

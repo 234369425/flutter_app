@@ -19,6 +19,10 @@ class Shared {
     return _instance;
   }
 
+  Future<SharedPreferences> getPrefs() {
+    return prefs;
+  }
+
   void setAccount(String user) async {
     prefs.then((value) => value.setString("user", user));
   }

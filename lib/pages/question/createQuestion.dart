@@ -4,12 +4,15 @@ import 'dart:io' as IO;
 import 'package:flutter/material.dart';
 import 'package:flutter_app/component/ui/header_bar.dart';
 import 'package:flutter_app/constants.dart';
+import 'package:flutter_app/constants/urls.dart';
 import 'package:flutter_app/db/DBOpera.dart';
+import 'package:flutter_app/utils/http_client.dart';
 import 'package:flutter_app/utils/route.dart';
+import 'package:flutter_app/utils/shared_util.dart';
 import 'package:flutter_app/utils/system.dart';
+import 'package:flutter_app/utils/toast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class QuestionWidget extends StatefulWidget {
   QuestionWidget({this.topButton});
@@ -23,43 +26,54 @@ class QuestionWidget extends StatefulWidget {
 class _QuestionWidgetState extends State<QuestionWidget> {
   final TextEditingController title = TextEditingController();
   final TextEditingController detail = TextEditingController();
-  final Future<SharedPreferences> prefs = SharedPreferences.getInstance();
+  final Shared shared = Shared.instance;
   final ImagePicker picker = ImagePicker();
   var _imagePath;
 
   @override
   void initState() {
     super.initState();
-    prefs.then((value) => {
-          title.text = value.getString(QuestionConstants.title),
-          detail.text = value.getString(QuestionConstants.detail)
-        });
+    shared.getPrefs().then((value) =>
+    {
+      title.text = value.getString(QuestionConstants.title),
+      detail.text = value.getString(QuestionConstants.detail)
+    });
   }
 
   void _submitQuestion() {
     DBOperator operator = DBOperator();
-    String imageStr = '';
+    String imageStr;
     if (_imagePath != null) {
       final bytes = IO.File(_imagePath).readAsBytesSync();
       imageStr = base64.encode(bytes);
       String suffix = _imagePath == null
           ? ''
           : _imagePath.substring(_imagePath.lastIndexOf('.') + 1);
-      operator.insertQuestion(title.text,
-          'data:image/' + suffix + ';base64,' + imageStr, detail.text);
-    } else {
-      operator.insertQuestion(title.text, null, detail.text);
+      imageStr = 'data:image/' + suffix + ';base64,' + imageStr;
     }
-    prefs.then((value) => {
-          value.remove(QuestionConstants.image),
-          value.remove(QuestionConstants.detail),
-          value.remove(QuestionConstants.title)
-        });
-    if (this.widget.topButton) {
-      popRoute();
-    } else {
-      popRoute();
-    }
+    shared.getAccount().then((user) =>
+        HttpClient.send(url_post_question, {
+          'user': user,
+          'title': title.text,
+          'content': detail.text,
+          'image': imageStr
+        }, (res) {
+          operator.insertQuestion(title.text, imageStr, detail.text);
+          shared.getPrefs().then((value) =>
+          {
+            value.remove(QuestionConstants.image),
+            value.remove(QuestionConstants.detail),
+            value.remove(QuestionConstants.title)
+          });
+          if (this.widget.topButton) {
+            popRoute();
+          } else {
+            title.clear();
+            detail.clear();
+            FtToast.warning("问题已提交");
+          }
+        }, (cause) {})
+    );
   }
 
   _showImagePicker(ImageSource source) async {
@@ -70,16 +84,20 @@ class _QuestionWidgetState extends State<QuestionWidget> {
     setState(() {
       _imagePath = image.path;
     });
-    prefs.then(
-        (value) => {value.setString(QuestionConstants.image, _imagePath)});
+    shared.getPrefs().then(
+            (value) => {value.setString(QuestionConstants.image, _imagePath)});
   }
 
   _detailChanged(String detail) async {
-    prefs.then((value) => {value.setString(QuestionConstants.detail, detail)});
+    shared
+        .getPrefs()
+        .then((value) => {value.setString(QuestionConstants.detail, detail)});
   }
 
   _titleChanged(String title) async {
-    prefs.then((value) => {value.setString(QuestionConstants.title, title)});
+    shared
+        .getPrefs()
+        .then((value) => {value.setString(QuestionConstants.title, title)});
   }
 
   @override
@@ -114,7 +132,7 @@ class _QuestionWidgetState extends State<QuestionWidget> {
                     IconButton(
                         icon: Icon(Icons.photo),
                         onPressed: () =>
-                            {_showImagePicker(ImageSource.gallery)})
+                        {_showImagePicker(ImageSource.gallery)})
                   ],
                 ),
                 DropdownButton(items: [

@@ -20,6 +20,7 @@ import 'package:flutter_app/utils/route.dart';
 import 'package:flutter_app/utils/shared_util.dart';
 import 'package:flutter_app/utils/toast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 class MyPage extends StatefulWidget {
@@ -52,14 +53,14 @@ class _MyPageState extends State<MyPage> {
   }
 
   _loadInfo() async{
-    await shared.getString("displayName");
+    await shared.getString("displayName").then((value) => this.setState(() {
+      name = value;
+    }));
   }
 
   Widget _body(GlobalModel model) {
     _model = model;
-    shared.getString("displayName").then((value) => this.setState(() {
-      name = value;
-    }));
+    _loadInfo();
 
     var content = [
       new LabelRow(
@@ -83,7 +84,9 @@ class _MyPageState extends State<MyPage> {
         isLine: true,
         isRight: true,
         rValue: name,
-        onPressed: () => pushRoute(new ChangeName(name)),
+        onPressed: () => pushRoute(new ChangeName(name),callback: {
+          _loadInfo()
+        }),
       ),
       new LabelRow(
         label: '班级',

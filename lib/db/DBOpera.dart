@@ -1,4 +1,5 @@
 import 'package:flutter_app/bean/Question.dart';
+import 'package:flutter_app/utils/shared_util.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DBOperator {
@@ -11,6 +12,7 @@ class DBOperator {
         db.execute('create table Question('
             'id INTEGER PRIMARY KEY autoincrement, '
             'type INTEGER default 0,'
+            'user TEXT,'
             'title TEXT,'
             'image TEXT,'
             'content TEXT,'
@@ -39,12 +41,13 @@ class DBOperator {
 
   Future<List<Question>> listQuestion() async {
     var database = await init();
-    List<Map> list = await database.rawQuery(
-        "select id, title, create_time, new_message "
+    List<Map> list =
+        await database.rawQuery("select id, title, create_time, new_message "
             "from Question order by create_time desc,new_message desc");
     var result = List<Question>();
     for (var v in list) {
-      result.add(new Question(v["id"], v["title"], v["create_time"], v["new_message"] == null ? 0 : v["new_message"]));
+      result.add(new Question(v["id"], v["title"], v["create_time"],
+          v["new_message"] == null ? 0 : v["new_message"]));
     }
     return result;
   }
@@ -52,11 +55,13 @@ class DBOperator {
   void insertQuestion(String title, String image, String detail) async {
     var database = await init();
     var params = new List();
+    params.add(await Shared.instance.getAccount());
     params.add(title);
     params.add(image);
     params.add(detail);
     database.rawInsert(
-        'insert into Question(title,image,content) values (?,?,?)', params);
+        'insert into Question(user,title,image,content) values (?,?,?,?)',
+        params);
   }
 
   void deleteQuestion(int id) async {

@@ -1,13 +1,19 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_app/component/dialog/show_toast.dart';
 import 'package:flutter_app/component/ui/header_bar.dart';
 import 'package:flutter_app/constants/color.dart';
+import 'package:flutter_app/constants/urls.dart';
 import 'package:flutter_app/provider/global_model.dart';
+import 'package:flutter_app/utils/http_client.dart';
 import 'package:flutter_app/utils/route.dart';
+import 'package:flutter_app/utils/shared_util.dart';
+import 'package:flutter_app/utils/toast.dart';
 import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
 
 class ChangeName extends StatefulWidget {
-
   final String name;
 
   ChangeName(this.name);
@@ -26,30 +32,37 @@ class _ChangeNameState extends State<ChangeName> {
       showToast(context, "空用户名");
       return;
     }
-    if (controller.text.length > 10) {
+    if (controller.text.length > 15) {
       showToast(context, "用户名过长");
       return;
     }
 
-    final model = Provider.of<GlobalModel>(context, listen: false);
-    model.nickName = controller.text;
-    popRoute();
+    Shared.instance.getAccount().then((value) =>
+        HttpClient.send(url_update_user, {
+          'user': value,
+          'displayName': controller.value.text
+        }, (data) {
+          Shared.instance.saveString("displayName", controller.text);
+          popRoute();
+        }, (cause) {
+          FtToast.danger("更新失败");
+        })
+    );
   }
-
 
   @override
   void initState() {
     super.initState();
-    controller.text = this.widget.name;
-
   }
 
   @override
   Widget build(BuildContext context) {
+    controller.text = this.widget.name;
+
     return Scaffold(
         backgroundColor: appBarColor,
         appBar: new HeaderBar(title: '修改显示名', rightDMActions: [
-          IconButton(icon: Icon(Icons.save), onPressed: _saveName)
+          TextButton(onPressed: _saveName, child: Text('完成'))
         ]),
         body: Column(
           children: [
