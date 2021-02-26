@@ -130,14 +130,14 @@ class Frame extends State<LoginFrame> {
                               onPressed: _submit,
                               child: Text('登陆'),
                             )
-                          : RaisedButton(child: Text('登录中...'))),
+                          : RaisedButton(child: Text('登录中...'),onPressed: null,)),
                   SystemUtil.emptyExpanded(2),
                   Expanded(
                       flex: 4,
                       child: !loading
                           ? RaisedButton(
                               onPressed: _register, child: Text('注册'))
-                          : RaisedButton(child: Text('注册'))),
+                          : RaisedButton(child: Text('注册'),onPressed: null,)),
                   SystemUtil.emptyExpanded(4),
                 ],
               )
