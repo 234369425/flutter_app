@@ -8,6 +8,7 @@ import 'package:flutter_app/constants/urls.dart';
 import 'package:flutter_app/layout/application.dart';
 import 'package:flutter_app/pages/register.dart';
 import 'package:flutter_app/provider/login_model.dart';
+import 'package:flutter_app/utils/http_client.dart';
 import 'package:flutter_app/utils/route.dart';
 import 'package:flutter_app/utils/shared_util.dart';
 import 'package:flutter_app/utils/system.dart';
@@ -59,9 +60,10 @@ class Frame extends State<LoginFrame> {
     this.setState(() {
       this.loading = true;
     });
-    _send((rs) {
-      //pushAndRemoveRoute(ApplicationLayout());
-      var resp = jsonDecode(rs);
+    HttpClient.send(url_login, {
+      'name': userName.value.text,
+      'password': password.value.text
+    }, (resp) {
       if (resp['code'] == 0) {
         var role = resp['data']['role'];
         var head = resp['data']['head'];
@@ -85,22 +87,6 @@ class Frame extends State<LoginFrame> {
         this.loading = false;
       });
     });
-  }
-
-  _send(success, fail) async {
-    try {
-      var response = await http.post(url_login,
-          body: jsonEncode(<String, String>{
-            'name': userName.value.text,
-            'password': password.value.text
-          }),
-          encoding: Encoding.getByName("utf8"));
-
-      success(response.body);
-      print(response);
-    } catch (e) {
-      fail();
-    }
   }
 
   void _register() {

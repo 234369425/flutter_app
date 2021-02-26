@@ -3,11 +3,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/component/ui/header_bar.dart';
 import 'package:flutter_app/constants/urls.dart';
+import 'package:flutter_app/utils/http_client.dart';
 import 'package:flutter_app/utils/route.dart';
 import 'package:flutter_app/utils/system.dart';
 import 'package:flutter_app/utils/toast.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:http/http.dart' as http;
 
 class Register extends StatefulWidget {
   @override
@@ -40,8 +40,12 @@ class _RegisterState extends State<Register> {
       FtToast.danger("显示名不能为空");
       displayNameFocus.requestFocus();
     }
-    _send((rs) {
-      var resp = jsonDecode(rs);
+    HttpClient.send(url_register, {
+      'name': userName.value.text,
+      'displayName': displayName.value.text,
+      'password': password.value.text,
+      'teacher': teacher ? "1" : "0"
+    }, (resp) {
       if (resp["code"] == 0) {
         popRoute();
       } else {
@@ -55,22 +59,6 @@ class _RegisterState extends State<Register> {
     }, () {
       Fluttertoast.showToast(msg: "连接服务器失败，请稍后尝试！");
     });
-  }
-
-  _send(success, fail) async {
-    try {
-      var response = await http.post(url_register,
-          body: jsonEncode(<String, String>{
-            'name': userName.value.text,
-            'displayName': displayName.value.text,
-            'password': password.value.text,
-            'teacher': teacher ? "1" : "0"
-          }));
-      success(response.body);
-      print(response);
-    } catch (e) {
-      fail();
-    }
   }
 
   _loginPage() {
