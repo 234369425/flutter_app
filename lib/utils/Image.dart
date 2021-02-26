@@ -1,7 +1,27 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter_app/utils/cache.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+
+class ImageUtils{
+  static  Widget dynamicAvatar(avatar, {size}) {
+    if (isInternetImage(avatar)) {
+      return new CachedNetworkImage(
+          imageUrl: avatar,
+          cacheManager: cacheManager,
+          width: size ?? null,
+          height: size ?? null,
+          fit: BoxFit.fill);
+    } else {
+      return Image.memory(Base64Decoder().convert(avatar),fit:BoxFit.contain);
+    }
+  }
+
+  static bool isInternetImage(String image) => image.startsWith("http");
+}
 
 Future<List<int>> compress(File file,
     {int width = 200, int height = 300, int quality = 80}) async {
