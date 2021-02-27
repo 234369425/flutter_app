@@ -33,15 +33,13 @@ class _QuestionWidgetState extends State<QuestionWidget> {
   @override
   void initState() {
     super.initState();
-    shared.getPrefs().then((value) =>
-    {
-      title.text = value.getString(QuestionConstants.title),
-      detail.text = value.getString(QuestionConstants.detail)
-    });
+    shared.getPrefs().then((value) => {
+          title.text = value.getString(QuestionConstants.title),
+          detail.text = value.getString(QuestionConstants.detail)
+        });
   }
 
   void _submitQuestion() {
-    DBOperator operator = DBOperator();
     String imageStr;
     if (_imagePath != null) {
       final bytes = IO.File(_imagePath).readAsBytesSync();
@@ -51,20 +49,18 @@ class _QuestionWidgetState extends State<QuestionWidget> {
           : _imagePath.substring(_imagePath.lastIndexOf('.') + 1);
       imageStr = 'data:image/' + suffix + ';base64,' + imageStr;
     }
-    shared.getAccount().then((user) =>
-        HttpClient.send(url_post_question, {
+    shared.getAccount().then((user) => HttpClient.send(url_post_question, {
           'user': user,
           'title': title.text,
           'content': detail.text,
           'image': imageStr
         }, (res) {
-          operator.insertQuestion(title.text, imageStr, detail.text);
-          shared.getPrefs().then((value) =>
-          {
-            value.remove(QuestionConstants.image),
-            value.remove(QuestionConstants.detail),
-            value.remove(QuestionConstants.title)
-          });
+          DBOperator.insertQuestion(title.text, imageStr, detail.text);
+          shared.getPrefs().then((value) => {
+                value.remove(QuestionConstants.image),
+                value.remove(QuestionConstants.detail),
+                value.remove(QuestionConstants.title)
+              });
           if (this.widget.topButton) {
             popRoute();
           } else {
@@ -72,8 +68,7 @@ class _QuestionWidgetState extends State<QuestionWidget> {
             detail.clear();
             FtToast.warning("问题已提交");
           }
-        }, (cause) {})
-    );
+        }, (cause) {}));
   }
 
   _showImagePicker(ImageSource source) async {
@@ -85,7 +80,7 @@ class _QuestionWidgetState extends State<QuestionWidget> {
       _imagePath = image.path;
     });
     shared.getPrefs().then(
-            (value) => {value.setString(QuestionConstants.image, _imagePath)});
+        (value) => {value.setString(QuestionConstants.image, _imagePath)});
   }
 
   _detailChanged(String detail) async {
@@ -132,17 +127,20 @@ class _QuestionWidgetState extends State<QuestionWidget> {
                     IconButton(
                         icon: Icon(Icons.photo),
                         onPressed: () =>
-                        {_showImagePicker(ImageSource.gallery)})
+                            {_showImagePicker(ImageSource.gallery)})
                   ],
                 ),
-                DropdownButton(items: [
-                  DropdownMenuItem(
-                    child: Text('数学'),
-                  ),
-                  DropdownMenuItem(
-                    child: Text('英语'),
-                  ),
-                ], onChanged: _dropDownChanged),
+                DropdownButton(
+                    isExpanded: true,
+                    items: [
+                      DropdownMenuItem(
+                        child: Text('数学'),
+                      ),
+                      DropdownMenuItem(
+                        child: Text('英语'),
+                      ),
+                    ],
+                    onChanged: _dropDownChanged),
                 TextField(
                   maxLines: 8,
                   controller: detail,
@@ -150,7 +148,7 @@ class _QuestionWidgetState extends State<QuestionWidget> {
                   decoration: InputDecoration(
                       labelText: '详细描述', icon: Icon(Icons.text_snippet)),
                 ),
-                RaisedButton(onPressed: _submitQuestion, child: Text('Ask'))
+                RaisedButton(onPressed: _submitQuestion, child: Text(' 提 交 '))
               ],
             ),
             context));

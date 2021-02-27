@@ -16,7 +16,10 @@ class ImageUtils{
           height: size ?? null,
           fit: BoxFit.fill);
     } else {
-      return Image.memory(Base64Decoder().convert(avatar),fit:BoxFit.contain);
+      return Image.memory(Base64Decoder().convert(avatar),
+          width: 32,
+          height: 32,
+          fit:BoxFit.contain);
     }
   }
 

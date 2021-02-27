@@ -1,9 +1,10 @@
 import 'package:flutter_app/bean/Question.dart';
+import 'package:flutter_app/bean/Relay.dart';
 import 'package:flutter_app/utils/shared_util.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DBOperator {
-  Future<Database> init() async {
+  static Future<Database> init() async {
     var databasesPath = await getDatabasesPath();
     String path = databasesPath + 'chart.db';
     var database = openDatabase(path, version: 1,
@@ -22,7 +23,7 @@ class DBOperator {
         db.execute('create table Relay('
             'id INTEGER PRIMARY KEY autoincrement,'
             'question_id INTEGER,'
-            'user_id INTEGER,'
+            'user TEXT,'
             'image TEXT,'
             'content TEXT,'
             'receive_time TIMESTAMP,'
@@ -39,7 +40,7 @@ class DBOperator {
     return database;
   }
 
-  Future<List<Question>> listQuestion() async {
+  static Future<List<Question>> listQuestion() async {
     var database = await init();
     List<Map> list =
         await database.rawQuery("select id, title, create_time, new_message "
@@ -52,7 +53,39 @@ class DBOperator {
     return result;
   }
 
-  void insertQuestion(String title, String image, String detail) async {
+  static void insertRelay(Relay relay) async {
+    var database = await init();
+    var params = new List();
+    params.add(relay.questionId);
+    params.add(relay.user);
+    params.add(relay.image);
+    params.add(relay.content);
+    await database.rawInsert(
+        "insert into Relay(question_id,user,image,content,receive_time) values (?,?,?,?,date('now'))",
+        params);
+  }
+
+  static Future<List<Relay>> queryRelay(int id) async {
+    var database = await init();
+    var params = new List();
+    params.add(id);
+    List<Map> relays = await database.rawQuery(
+        "select * from Relay where question_id = ?", params);
+    List<Relay> result = List<Relay>();
+    for (var relay in relays) {
+      Relay r = Relay();
+      r.id = relay["id"];
+      r.questionId = relay["question_id"];
+      r.user = relay["user"];
+      r.image = relay["image"];
+      r.content = relay["content"];
+      r.time = relay["receive_time"];
+      result.add(r);
+    }
+    return result;
+  }
+
+  static void insertQuestion(String title, String image, String detail) async {
     var database = await init();
     var params = new List();
     params.add(await Shared.instance.getAccount());
@@ -64,14 +97,14 @@ class DBOperator {
         params);
   }
 
-  void deleteQuestion(int id) async {
+  static void deleteQuestion(int id) async {
     var data = List();
     data.add(id);
     var database = await init();
     database.delete("Question", where: "id = ?", whereArgs: data);
   }
 
-  Future<Question> viewQuestion(int id) async {
+  static Future<Question> viewQuestion(int id) async {
     var data = List();
     data.add(id);
     var database = await init();

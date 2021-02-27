@@ -44,7 +44,6 @@ class _MyPageState extends State<MyPage> {
     }
     String headPortrait = await compressToString(File(image.path));
     showToast(context, 'success ');
-
     _model.head = headPortrait;
     _model.refresh();
   }

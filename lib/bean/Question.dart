@@ -1,3 +1,5 @@
+import 'package:flutter_app/bean/Relay.dart';
+
 class Question {
   int id;
   String title;
@@ -8,11 +10,19 @@ class Question {
 
   Question(this.id, this.title, this.createTime, this.newMessage);
 
-  static Question of(Map<String,dynamic> q){
-    Question qt = Question(q["id"], q["title"], q["create_time"], q["new_message"]);
+  static Question of(Map<String, dynamic> q) {
+    Question qt =
+        Question(q["id"], q["title"], q["create_time"], q["new_message"]);
     qt.image = q["image"];
     qt.content = q["content"];
     return qt;
   }
 
+  Relay toRelay() {
+    Relay relay = Relay();
+    relay.image = this.image;
+    relay.content = this.content;
+    relay.time = this.createTime;
+    return relay;
+  }
 }

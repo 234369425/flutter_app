@@ -38,6 +38,7 @@ dependencies:
   flutter_html: 1.2.0
   fluttertoast: 7.1.8
   connectivity: 2.0.2
+  keyboard_manager: 0.2.2
   http: 0.12.2
   #状态管理
   provider: 4.3.1

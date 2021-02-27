@@ -1,8 +1,9 @@
-class Relay{
+class Relay {
   int id;
   int questionId;
-  int userId;
+  String user;
   String image;
   String content;
+  String time;
   int isRead;
 }

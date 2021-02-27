@@ -15,7 +15,6 @@ class QuestionList extends StatefulWidget {
 }
 
 class _QuestionListState extends State<QuestionList> {
-  DBOperator _dbOperator = new DBOperator();
   final SlidableController slidableController = SlidableController();
 
   void _toAskQuestion() {
@@ -56,15 +55,15 @@ class _QuestionListState extends State<QuestionList> {
 
   _showDetail(Question qs) {
     pushRoute(new QuestionDetail(qs), callback: () {
-        setState(() {
-          print('refresh state');
-        });
+      setState(() {
+        print('refresh state');
+      });
     });
   }
 
   _doMethod(String action, Question q) {
     if (action == 'Delete') {
-      _dbOperator.deleteQuestion(q.id);
+      DBOperator.deleteQuestion(q.id);
     }
     print(action);
   }
@@ -80,7 +79,7 @@ class _QuestionListState extends State<QuestionList> {
         )
       ]),
       body: FutureBuilder<List>(
-        future: _dbOperator.listQuestion(),
+        future: DBOperator.listQuestion(),
         initialData: List(),
         builder: (context, snapshot) {
           return snapshot.hasData
