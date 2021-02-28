@@ -34,10 +34,11 @@ class _QuestionDetailState extends State<QuestionDetail> {
             _question.id = value.id;
             _question.title = value.title;
             relays.add(value.toRelay());
-
-            DBOperator.queryRelay(id).then((value) => {
-              relays.addAll(value)
-            });
+            DBOperator.queryRelay(value.id).then((value) => {
+                  this.setState(() {
+                    relays.addAll(value);
+                  })
+                });
           })
         });
   }

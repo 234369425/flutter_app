@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -7,11 +8,13 @@ import 'package:flutter_app/component/ui/header_bar.dart';
 import 'package:flutter_app/component/ui/label_row.dart';
 import 'package:flutter_app/constants/color.dart';
 import 'package:flutter_app/constants/defaults.dart';
+import 'package:flutter_app/constants/urls.dart';
 import 'package:flutter_app/pages/login.dart';
 import 'package:flutter_app/pages/my/ChangeGrade.dart';
 import 'package:flutter_app/pages/my/ChangeName.dart';
 import 'package:flutter_app/provider/global_model.dart';
 import 'package:flutter_app/utils/Image.dart';
+import 'package:flutter_app/utils/http_client.dart';
 import 'package:flutter_app/utils/route.dart';
 import 'package:flutter_app/utils/shared_util.dart';
 import 'package:flutter_app/utils/toast.dart';
@@ -28,8 +31,8 @@ class _MyPageState extends State<MyPage> {
   final ImagePicker picker = ImagePicker();
   var shared = Shared.instance;
   var name;
-
-  GlobalModel _model;
+  var head;
+  var grade;
 
   _openGallery({type = ImageSource.gallery}) async {
     var image;
@@ -43,9 +46,12 @@ class _MyPageState extends State<MyPage> {
       return;
     }
     String headPortrait = await compressToString(File(image.path));
+    Shared.instance.getAccount().then((value) => {
+          HttpClient.send(url_update_user, {'user': value}, (s) {
+            Shared.instance.saveString('head', headPortrait);
+          }, () {})
+        });
     showToast(context, 'success ');
-    _model.head = headPortrait;
-    _model.refresh();
   }
 
   _loadInfo() async {
@@ -57,10 +63,22 @@ class _MyPageState extends State<MyPage> {
               })
             }
         });
+
+    await shared.getString("head").then((value) => {
+      if (this.mounted)
+        {
+          this.setState(() {
+            if(value == null || value == "") {
+              head = headPortrait;
+            }else {
+              head = value;
+            }
+          })
+        }
+    });
   }
 
-  Widget _body(GlobalModel model) {
-    _model = model;
+  Widget _body() {
     _loadInfo();
 
     var content = [
@@ -73,9 +91,7 @@ class _MyPageState extends State<MyPage> {
           height: 55.0,
           child: new ClipRRect(
             borderRadius: BorderRadius.all(Radius.circular(5.0)),
-            child: model.head == null || model.head == ''
-                ? new Image.asset(headPortrait, fit: BoxFit.cover)
-                : ImageUtils.dynamicAvatar(model.head),
+            child: ImageUtils.dynamicAvatar(head),
           ),
         ),
         onPressed: () => _openGallery(),
@@ -92,7 +108,7 @@ class _MyPageState extends State<MyPage> {
         label: '班级',
         isLine: true,
         isRight: true,
-        rValue: model.grade,
+        rValue: grade,
         onPressed: () => pushRoute(new ChangeGrade()),
       ),
     ];
@@ -112,7 +128,7 @@ class _MyPageState extends State<MyPage> {
             body: Builder(
               builder: (BuildContext ctx) {
                 return new SingleChildScrollView(
-                    child: _body(ctx.watch<GlobalModel>()));
+                    child: _body());
               },
             ),
             bottomNavigationBar: Row(

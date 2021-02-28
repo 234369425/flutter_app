@@ -6,9 +6,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_app/utils/cache.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 
-class ImageUtils{
-  static  Widget dynamicAvatar(avatar, {size}) {
-    if (isInternetImage(avatar)) {
+class ImageUtils {
+  static Widget dynamicAvatar(avatar, {size}) {
+    if (avatar.startsWith("assets")) {
+      return Image.asset(avatar);
+    } else if (isInternetImage(avatar)) {
       return new CachedNetworkImage(
           imageUrl: avatar,
           cacheManager: cacheManager,
@@ -16,10 +18,8 @@ class ImageUtils{
           height: size ?? null,
           fit: BoxFit.fill);
     } else {
-      return Image.memory(Base64Decoder().convert(avatar),
-          width: 32,
-          height: 32,
-          fit:BoxFit.contain);
+      return Image.memory(Base64Decoder().convert(avatar), fit: BoxFit.cover,
+          gaplessPlayback: true);
     }
   }
 
