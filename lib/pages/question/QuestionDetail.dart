@@ -5,8 +5,13 @@ import 'package:flutter_app/bean/Question.dart';
 import 'package:flutter_app/bean/Relay.dart';
 import 'package:flutter_app/component/ui/custom_button.dart';
 import 'package:flutter_app/component/ui/header_bar.dart';
+import 'package:flutter_app/constants/defaults.dart';
 import 'package:flutter_app/db/DBOpera.dart';
+import 'package:flutter_app/utils/Image.dart';
+import 'package:flutter_app/utils/shared_util.dart';
 import 'package:flutter_app/utils/system.dart';
+import 'package:flutter_app/utils/toast.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:keyboard_manager/keyboard_manager.dart';
 
 class QuestionDetail extends StatefulWidget {
@@ -26,7 +31,10 @@ class _QuestionDetailState extends State<QuestionDetail> {
   ScrollController scrollController = new ScrollController();
   var relays = <Relay>[];
   var commit = false;
+  var head = headPortrait;
+  var _loading = true;
   FocusNode focusNode = FocusNode();
+  final ImagePicker picker = ImagePicker();
 
   _QuestionDetailState(int id) {
     DBOperator.viewQuestion(id).then((value) => {
@@ -43,22 +51,100 @@ class _QuestionDetailState extends State<QuestionDetail> {
         });
   }
 
+  _openCamera() async {
+    _openGallery(type: ImageSource.camera);
+  }
+
+  _openGallery({type: ImageSource.gallery}) async {
+    var image;
+    try {
+      image = await picker.getImage(source: type);
+    } catch (e) {
+      FtToast.danger("请授予相机相册访问权限！");
+      return;
+    }
+    if (image == null) {
+      return;
+    }
+    String imageStr = await compressToString(File(image.path));
+
+    var relay = Relay();
+    relay.questionId = _question.id;
+    relay.image = imageStr;
+    relay.time = DateTime.now().toString();
+    relay.time = relay.time.substring(0, relay.time.indexOf('.'));
+    relays.add(relay);
+    DBOperator.insertRelay(relay);
+  }
+
   _sendMessage() {
+    if (controller.text.trim() == "") {
+      return;
+    }
     var relay = Relay();
     relay.questionId = _question.id;
     relay.content = controller.text;
-    relay.time = DateTime.now().toIso8601String();
+    relay.time = DateTime.now().toString();
+    relay.time = relay.time.substring(0, relay.time.indexOf('.'));
     relays.add(relay);
     controller.text = "";
     commit = false;
     DBOperator.insertRelay(relay);
     this.setState(() {
-      //scrollController.jumpTo(this.context.size.height - SystemUtil.keyBoardHeight(context));
+      scrollController.jumpTo(
+          this.context.size.height - SystemUtil.keyBoardHeight(context).bottom);
     });
 //    focusNode.unfocus();
   }
 
-  _createRow(int index) {
+  _scrollToBottom(){
+    scrollController.jumpTo(
+        this.context.size.height - SystemUtil.keyBoardHeight(context).bottom);
+  }
+
+  List<Widget> _createRowContent(int index, double width) {
+    Relay q = relays[index];
+    var res = <Widget>[];
+    var current = relays[index];
+    var showTime = q.timeString();
+    if (index != 0) {
+      var last = relays[index - 1];
+      showTime = q.showTime(last.time);
+    }
+    if (showTime != "") {
+      res.add(
+        Container(
+          margin: EdgeInsets.only(bottom: 3.0),
+          alignment: Alignment.center,
+          child: Text(
+            showTime,
+            style: TextStyle(color: Colors.black54),
+          ),
+        ),
+      );
+    }
+    res.add(Container(
+        width: width,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(5),
+          gradient: q.user == null
+              ? LinearGradient(colors: [Colors.lightGreen, Colors.lightGreen])
+              : LinearGradient(colors: [Colors.black12, Colors.black12]),
+        ),
+        child: Padding(
+            padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
+            child: current.content != null
+                ? Text(
+                    current.content,
+                    softWrap: true,
+                  )
+                : ImageUtils.dynamicAvatar(current.image))));
+    return res;
+  }
+
+  _createRow(BuildContext context, int index) {
+    var size = MediaQuery.of(context).size;
+    var width = size.width / 12 * 7.8;
     Relay q = relays[index];
     GlobalKey textKey = GlobalKey();
     return Row(
@@ -76,30 +162,52 @@ class _QuestionDetailState extends State<QuestionDetail> {
         Expanded(
             flex: 8,
             child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5),
-                  gradient: q.user == null
-                      ? LinearGradient(
-                          colors: [Colors.lightGreen, Colors.lightGreen])
-                      : LinearGradient(
-                          colors: [Colors.black12, Colors.black12]),
-                ),
-                child: Padding(
-                  padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
-                  child: Text(q.content, key: textKey),
-                ))),
+              margin: EdgeInsets.only(bottom: 10.0),
+              child: Wrap(children: _createRowContent(index, width)),
+            )),
         Expanded(
             flex: 2,
             child: Padding(
-                padding: EdgeInsets.fromLTRB(10, 5, 10, 0),
+                padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
                 child: Container(
-                  child: q.user == null
-                      ? new Image.asset('assets/images/def_head_portrait.png',
-                          fit: BoxFit.cover, gaplessPlayback: true)
-                      : Text(''),
-                )))
+                    alignment: Alignment.topCenter,
+                    child: new SizedBox(
+                      width: 40.0,
+                      height: 40.0,
+                      child: new ClipRRect(
+                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                        child: q.user == null
+                            ? ImageUtils.dynamicAvatar(head)
+                            : Text(''),
+                      ),
+                    ))))
       ],
     );
+  }
+
+  @override
+  void initState() {
+    Shared.instance.getString("head").then((value) => {
+          this.setState(() {
+            if (value != null) {
+              head = value;
+            }
+          })
+        });
+    scrollController.addListener(() {
+      if (scrollController.position.maxScrollExtent==scrollController.position.pixels) {
+        print('滑动到了最底部');
+
+        if(!_loading){
+          double _position =  scrollController.position.maxScrollExtent-10;
+          scrollController.animateTo(_position, duration: Duration(seconds: 1),
+              curve:Curves.ease );
+          _loading=true;
+        }
+//        getListData();
+      }
+    });
+    super.initState();
   }
 
   _addPressed() {}
@@ -116,7 +224,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
             },
             child: ListView.builder(
               itemCount: relays.length,
-              itemBuilder: (context, i) => _createRow(i),
+              itemBuilder: (context, i) => _createRow(context, i),
               controller: scrollController,
               shrinkWrap: true,
               padding: SystemUtil.keyBoardHeight(context),
@@ -126,7 +234,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
                 Row(
                   children: [
                     Expanded(
-                      flex: 20,
+                      flex: 15,
                       child: TextField(
                         controller: controller,
                         onSubmitted: (s) => {_sendMessage()},
@@ -152,10 +260,15 @@ class _QuestionDetailState extends State<QuestionDetail> {
                                 style: TextStyle(color: Colors.white),
                                 onTap: _sendMessage,
                               )
-                            : IconButton(
-                                icon: Icon(Icons.add),
-                                onPressed: _addPressed,
-                              ))
+                            : Row(children: [
+                                IconButton(
+                                  icon: Icon(Icons.camera_alt),
+                                  onPressed: _openCamera,
+                                ),
+                                IconButton(
+                                    icon: Icon(Icons.photo),
+                                    onPressed: _openGallery)
+                              ]))
                   ],
                 ),
                 context)));

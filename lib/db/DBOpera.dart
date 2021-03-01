@@ -26,7 +26,7 @@ class DBOperator {
             'user TEXT,'
             'image TEXT,'
             'content TEXT,'
-            'receive_time TIMESTAMP,'
+            'receive_time TIMESTAMP default (datetime(\'now\', \'localtime\')),'
             'is_read INTEGER default 0'
             ')');
 
@@ -55,13 +55,13 @@ class DBOperator {
 
   static void insertRelay(Relay relay) async {
     var database = await init();
-    var params = new List();
+    var params = [];
     params.add(relay.questionId);
     params.add(relay.user);
     params.add(relay.image);
     params.add(relay.content);
     await database.rawInsert(
-        "insert into Relay(question_id,user,image,content,receive_time) values (?,?,?,?,date('now'))",
+        "insert into Relay(question_id,user,image,content,receive_time) values (?,?,?,?,datetime(\'now\', \'localtime\'))",
         params);
   }
 
@@ -98,14 +98,14 @@ class DBOperator {
   }
 
   static void deleteQuestion(int id) async {
-    var data = List();
+    var data = [];
     data.add(id);
     var database = await init();
     database.delete("Question", where: "id = ?", whereArgs: data);
   }
 
   static Future<Question> viewQuestion(int id) async {
-    var data = List();
+    var data = [];
     data.add(id);
     var database = await init();
     var q = await database.query("Question", where: "id = ?", whereArgs: data);

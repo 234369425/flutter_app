@@ -3,11 +3,15 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_app/constants/defaults.dart';
 import 'package:flutter_app/utils/cache.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 class ImageUtils {
-  static Widget dynamicAvatar(avatar, {size}) {
+  static Widget dynamicAvatar(avatar, {size,width,height}) {
+    if(avatar == null){
+      return Image.asset(headPortrait);
+    }
     if (avatar.startsWith("assets")) {
       return Image.asset(avatar);
     } else if (isInternetImage(avatar)) {
@@ -19,6 +23,8 @@ class ImageUtils {
           fit: BoxFit.fill);
     } else {
       return Image.memory(Base64Decoder().convert(avatar), fit: BoxFit.cover,
+          width: width,
+          height: height,
           gaplessPlayback: true);
     }
   }

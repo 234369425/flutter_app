@@ -16,6 +16,9 @@ class QuestionList extends StatefulWidget {
 
 class _QuestionListState extends State<QuestionList> {
   final SlidableController slidableController = SlidableController();
+  final ScrollController _scrollController = ScrollController();
+  var dataList = [];
+  var _loading = true;
 
   void _toAskQuestion() {
     pushRoute(QuestionWidget(topButton: true), callback: () {
@@ -27,6 +30,20 @@ class _QuestionListState extends State<QuestionList> {
 
   @override
   void initState() {
+    _scrollController.addListener(() {
+      if (_scrollController.position.maxScrollExtent ==
+          _scrollController.position.pixels) {
+        print('滑动到了最底部');
+
+        if (!_loading) {
+          double _position = _scrollController.position.maxScrollExtent - 10;
+          _scrollController.animateTo(_position,
+              duration: Duration(seconds: 1), curve: Curves.ease);
+          _loading = true;
+        }
+//        getListData();
+      }
+    });
     super.initState();
   }
 
@@ -68,6 +85,15 @@ class _QuestionListState extends State<QuestionList> {
     print(action);
   }
 
+  _queryQuestions(){
+    if(this.mounted) {
+      DBOperator.listQuestion().then((value) =>
+          this.setState(() {
+            dataList.addAll(value);
+          }));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -79,13 +105,14 @@ class _QuestionListState extends State<QuestionList> {
         )
       ]),
       body: FutureBuilder<List>(
-        future: DBOperator.listQuestion(),
-        initialData: List(),
+        future: _queryQuestions(),
+        initialData: dataList,
         builder: (context, snapshot) {
           return snapshot.hasData
               ? new ListView.builder(
                   padding: const EdgeInsets.all(10.0),
                   itemCount: snapshot.data.length,
+                  controller: _scrollController,
                   itemBuilder: (context, i) {
                     var q = snapshot.data[i];
                     return Slidable(
