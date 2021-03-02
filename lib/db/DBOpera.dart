@@ -40,17 +40,27 @@ class DBOperator {
     return database;
   }
 
-  static Future<List<Question>> listQuestion() async {
+  static Future<List<Question>> listQuestion(int offset) async {
     var database = await init();
-    List<Map> list =
-        await database.rawQuery("select id, title, create_time, new_message "
-            "from Question order by create_time desc,new_message desc");
+    List<Map> list = await database.rawQuery(
+        "select id, title, create_time, new_message from Question where id in (select id "
+                "from Question order by create_time desc ,new_message desc limit 8 offset " +
+            offset.toString() +
+            ")");
     var result = List<Question>();
     for (var v in list) {
       result.add(new Question(v["id"], v["title"], v["create_time"],
           v["new_message"] == null ? 0 : v["new_message"]));
     }
     return result;
+  }
+
+  static Future<int> queryCount() async {
+    var database = await init();
+    var list = await database.rawQuery("select count(*) as ct from Question");
+    for (var v in list) {
+      return v["ct"];
+    }
   }
 
   static void insertRelay(Relay relay) async {

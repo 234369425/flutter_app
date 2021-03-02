@@ -45,9 +45,11 @@ class _MyPageState extends State<MyPage> {
     if (image == null) {
       return;
     }
-    String headPortrait = await compressToString(File(image.path));
+    String headPortrait =
+        await compressToString(File(image.path), width: 80, height: 80);
     Shared.instance.getAccount().then((value) => {
-          HttpClient.send(url_update_user, {'user': value}, (s) {
+          HttpClient.send(
+              url_update_user, {'user': value, 'head': headPortrait}, (s) {
             Shared.instance.saveString('head', headPortrait);
           }, () {})
         });
@@ -65,17 +67,17 @@ class _MyPageState extends State<MyPage> {
         });
 
     await shared.getString("head").then((value) => {
-      if (this.mounted)
-        {
-          this.setState(() {
-            if(value == null || value == "") {
-              head = headPortrait;
-            }else {
-              head = value;
+          if (this.mounted)
+            {
+              this.setState(() {
+                if (value == null || value == "") {
+                  head = headPortrait;
+                } else {
+                  head = value;
+                }
+              })
             }
-          })
-        }
-    });
+        });
   }
 
   Widget _body() {
@@ -127,8 +129,7 @@ class _MyPageState extends State<MyPage> {
                     ''),
             body: Builder(
               builder: (BuildContext ctx) {
-                return new SingleChildScrollView(
-                    child: _body());
+                return new SingleChildScrollView(child: _body());
               },
             ),
             bottomNavigationBar: Row(
