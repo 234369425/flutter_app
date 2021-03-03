@@ -74,7 +74,7 @@ class Frame extends State<LoginFrame> {
         shared.saveString("grade", grade);
         shared.saveString("role", role);
         shared.saveString("displayName", resp['data']['displayName']);
-        pushAndRemoveRoute(ApplicationLayout());
+        pushAndRemoveRoute(ApplicationLayout(role));
       } else {
         FtToast.danger('用户名或密码错误！');
       }

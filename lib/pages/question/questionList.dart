@@ -36,7 +36,7 @@ class _QuestionListState extends State<QuestionList> {
   @override
   void initState() {
     _queryQuestions();
-    DBOperator.queryCount().then((value) => {count = value});
+      DBOperator.queryCount().then((value) => {count = value});
     _scrollController.addListener(() {
       if (_scrollController.position.maxScrollExtent ==
           _scrollController.position.pixels) {
@@ -70,7 +70,7 @@ class _QuestionListState extends State<QuestionList> {
           foregroundColor: Colors.white,
         ),
         trailing: q.newMessage > 0 ? Icon(Icons.announcement_rounded) : null,
-        subtitle: Text(q.createTime??''),
+        subtitle: Text(q.createTime ?? ''),
         onTap: () {
           _showDetail(q);
         });
@@ -98,16 +98,22 @@ class _QuestionListState extends State<QuestionList> {
       Shared.instance.getString("role").then((value) => {
             if (value == "1")
               {
-                HttpClient.send(url_query_question, {'page': "0"}, (d) {
+                HttpClient.send(url_query_question, {'cursor': dataList.length.toString()}, (d) {
                   _loading = false;
                   if (d["code"] == 0) {
                     var list = d["list"];
                     for (var data in list) {
                       var question = data["map"];
                       var q = Question(question["id"], question["title"],
-                          question["createTime"], 0);
+                          question["create_time"].toString().replaceAll("T", " "), 0);
+                      q.content = question["content"];
+                      q.image = question["image"];
+                      q.user = question["user"];
                       dataList.add(q);
                     }
+                    this.setState(() {
+                      dataList = dataList;
+                    });
                   }
                 }, (e) {
                   _loading = false;

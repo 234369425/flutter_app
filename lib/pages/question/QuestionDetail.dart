@@ -37,17 +37,32 @@ class _QuestionDetailState extends State<QuestionDetail> {
   final ImagePicker picker = ImagePicker();
 
   _QuestionDetailState(int id) {
-    DBOperator.viewQuestion(id).then((value) => {
-          this.setState(() {
-            _question.id = value.id;
-            _question.title = value.title;
-            relays.add(value.toRelay());
-            DBOperator.queryRelay(value.id).then((value) => {
-                  this.setState(() {
-                    relays.addAll(value);
+    Shared.instance.getString("role").then((value) => {
+          if (value != "1")
+            {
+              DBOperator.viewQuestion(id).then((value) => {
+                    this.setState(() {
+                      _question.id = value.id;
+                      _question.title = value.title;
+                      relays.add(value.toRelay());
+                      DBOperator.queryRelay(value.id).then((value) => {
+                            this.setState(() {
+                              relays.addAll(value);
+                            })
+                          });
+                    })
                   })
-                });
-          })
+            }
+          else
+            {
+              _question = this.widget.q,
+              this.relays.add(_question.toRelay()),
+              DBOperator.queryRelay(_question.id).then((value) => {
+                    this.setState(() {
+                      relays.addAll(value);
+                    })
+                  })
+            }
         });
   }
 
@@ -81,6 +96,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
     if (controller.text.trim() == "") {
       return;
     }
+
     var relay = Relay();
     relay.questionId = _question.id;
     relay.content = controller.text;
@@ -89,7 +105,13 @@ class _QuestionDetailState extends State<QuestionDetail> {
     relays.add(relay);
     controller.text = "";
     commit = false;
-    DBOperator.insertRelay(relay);
+
+    Shared.instance.getString("role").then((value) => {
+          if (value == "1")
+            DBOperator.insertMyRelayQuestion(_question, relay)
+          else
+            DBOperator.insertRelay(relay)
+        });
     this.setState(() {
       scrollController.jumpTo(
           this.context.size.height - SystemUtil.keyBoardHeight(context).bottom);
@@ -97,7 +119,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
 //    focusNode.unfocus();
   }
 
-  _scrollToBottom(){
+  _scrollToBottom() {
     scrollController.jumpTo(
         this.context.size.height - SystemUtil.keyBoardHeight(context).bottom);
   }
@@ -151,14 +173,21 @@ class _QuestionDetailState extends State<QuestionDetail> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Expanded(
-          flex: 2,
-          child: new InkWell(
-            child: q.user == null
-                ? Text('')
-                : new Image.asset('assets/images/def_head_portrait.png',
-                    width: 25, fit: BoxFit.cover, gaplessPlayback: true),
-          ),
-        ),
+            flex: 2,
+            child: Padding(
+                padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
+                child: Container(
+                    alignment: Alignment.topCenter,
+                    child: new SizedBox(
+                      width: 40.0,
+                      height: 40.0,
+                      child: new ClipRRect(
+                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                        child: q.user != null
+                            ? ImageUtils.dynamicAvatar(head)
+                            : Text(''),
+                      ),
+                    )))),
         Expanded(
             flex: 8,
             child: Container(
@@ -195,14 +224,15 @@ class _QuestionDetailState extends State<QuestionDetail> {
           })
         });
     scrollController.addListener(() {
-      if (scrollController.position.maxScrollExtent==scrollController.position.pixels) {
+      if (scrollController.position.maxScrollExtent ==
+          scrollController.position.pixels) {
         print('滑动到了最底部');
 
-        if(!_loading){
-          double _position =  scrollController.position.maxScrollExtent-10;
-          scrollController.animateTo(_position, duration: Duration(seconds: 1),
-              curve:Curves.ease );
-          _loading=true;
+        if (!_loading) {
+          double _position = scrollController.position.maxScrollExtent - 10;
+          scrollController.animateTo(_position,
+              duration: Duration(seconds: 1), curve: Curves.ease);
+          _loading = true;
         }
 //        getListData();
       }

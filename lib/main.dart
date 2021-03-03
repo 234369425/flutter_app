@@ -29,7 +29,7 @@ class Application extends StatelessWidget {
         '/': (context) {
           return model.gotoLogin()
               ? ProviderConfig.getInstance().getLoginPage(LoginFrame())
-              : new ApplicationLayout();
+              : new ApplicationLayout('0');
         }
       },
     );

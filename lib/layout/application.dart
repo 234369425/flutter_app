@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/layout/MainBody.dart';
 import 'package:flutter_app/pages/my/MyPage.dart';
+import 'package:flutter_app/pages/question/MyRelayQuestionList.dart';
 import 'package:flutter_app/pages/question/questionList.dart';
 import 'package:flutter_app/pages/question/createQuestion.dart';
+import 'package:flutter_app/utils/shared_util.dart';
 
 class ApplicationLayout extends StatefulWidget {
+  final String role;
+
+  ApplicationLayout(this.role);
+
   @override
   State<StatefulWidget> createState() => _LayoutPageState();
 }
@@ -12,6 +18,16 @@ class ApplicationLayout extends StatefulWidget {
 class _LayoutPageState extends State<ApplicationLayout> {
   @override
   Widget build(BuildContext context) {
+    Widget center;
+    IconData centerIcon;
+    if (this.widget.role == '1') {
+      center = MyRelayQuestionList();
+      centerIcon = Icons.accessibility;
+    } else {
+      center = QuestionWidget(topButton: false);
+      centerIcon = Icons.add_circle;
+    }
+
     List<TabBarModel> pages = <TabBarModel>[
       new TabBarModel(
           title: "Questions",
@@ -21,10 +37,10 @@ class _LayoutPageState extends State<ApplicationLayout> {
       new TabBarModel(
           title: "",
           icon: Icon(
-            Icons.add_circle,
+            centerIcon,
             size: 38,
           ),
-          page: QuestionWidget(topButton: false)),
+          page: center),
       new TabBarModel(
           title: "Me",
           icon: _LoadIcon("assets/images/tab/me_c.webp"),

@@ -3,9 +3,11 @@ import 'package:flutter_app/bean/Relay.dart';
 class Question {
   int id;
   String title;
+  String head;
   String image;
   String createTime;
   String content;
+  String user;
   int newMessage;
 
   Question(this.id, this.title, this.createTime, this.newMessage);
@@ -23,6 +25,7 @@ class Question {
     relay.image = this.image;
     relay.content = this.content;
     relay.time = this.createTime;
+    relay.user = this.user;
     return relay;
   }
 }
