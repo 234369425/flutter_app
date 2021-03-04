@@ -1,10 +1,7 @@
 package io.agora.agorartm
 
 import android.os.Handler
-import io.agora.rtm.RtmChannelAttribute
-import io.agora.rtm.RtmChannelListener
-import io.agora.rtm.RtmChannelMember
-import io.agora.rtm.RtmMessage
+import io.agora.rtm.*
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.EventChannel
 
@@ -57,6 +54,14 @@ class RTMChannel : RtmChannelListener, EventChannel.StreamHandler {
                         "ts" to message.serverReceivedTs
                 )
         ))
+    }
+
+    override fun onImageMessageReceived(p0: RtmImageMessage?, p1: RtmChannelMember?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onFileMessageReceived(p0: RtmFileMessage?, p1: RtmChannelMember?) {
+        TODO("Not yet implemented")
     }
 
     override

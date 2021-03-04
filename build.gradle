@@ -29,10 +29,9 @@ dependencies {
     implementation 'org.jetbrains.kotlin:kotlin-reflect:1.4.31'
     implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.4.31'
     //implementation 'org.jetbrains.kotlin:kotlin-jdk8:1.4.31'
-    implementation 'io.agora.rtm:rtm-sdk:1.2.2'
+    //implementation 'io.agora.rtm:rtm-sdk:1.2.2'
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.4.31"
-
     // Use JUnit test framework
     testImplementation 'junit:junit:4.13.2'
 

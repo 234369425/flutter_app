@@ -16,6 +16,7 @@ void main() {
 }
 
 class Application extends StatelessWidget {
+
   var _client;
 
   Application() {
