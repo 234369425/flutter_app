@@ -53,15 +53,16 @@ android {
         }
     }
 
+    /*
     dependencies {
-        implementation fileTree(dir: 'libs', include: '*.jar')
+        //implementation fileTree(dir: 'libs', include: '*.jar')
     }
 
     sourceSets{
         main{
-            jniLibs.srcDir 'libs'
+            //jniLibs.srcDir 'libs'
         }
-    }
+    }*/
 
 }
 

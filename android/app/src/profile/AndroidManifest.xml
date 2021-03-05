@@ -7,4 +7,5 @@
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-sdk android:minSdkVersion="21" tools:overrideLibrary="io.flutter.plugins.camera"/>
+    <application android:name="io.flutter.app.FlutterApplication" android:label="receipt" android:usesCleartextTraffic="true"/>
 </manifest>

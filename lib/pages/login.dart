@@ -10,6 +10,7 @@ import 'package:flutter_app/pages/register.dart';
 import 'package:flutter_app/provider/login_model.dart';
 import 'package:flutter_app/utils/http_client.dart';
 import 'package:flutter_app/utils/route.dart';
+import 'package:flutter_app/utils/rtm_message.dart';
 import 'package:flutter_app/utils/shared_util.dart';
 import 'package:flutter_app/utils/system.dart';
 import 'package:flutter_app/utils/toast.dart';
@@ -75,6 +76,7 @@ class Frame extends State<LoginFrame> {
         shared.saveString("role", role);
         shared.saveString("displayName", resp['data']['displayName']);
         pushAndRemoveRoute(ApplicationLayout(role));
+        RTMMessage.init();
       } else {
         FtToast.danger('用户名或密码错误！');
       }

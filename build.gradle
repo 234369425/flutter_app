@@ -39,5 +39,6 @@ dependencies {
 
 application {
     // Define the main class for the application.
-    mainClassName = 'flutter_app.App'
+//    mainClassName = 'flutter_app.App'≥…
+//}
 }
