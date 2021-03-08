@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -34,6 +35,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
   var commit = false;
   var head = headPortrait;
   var _loading = true;
+  var canRelay = false;
   FocusNode focusNode = FocusNode();
   final ImagePicker picker = ImagePicker();
 
@@ -56,6 +58,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
             }
           else
             {
+              canRelay = true,
               _question = this.widget.q,
               this.relays.add(_question.toRelay()),
               DBOperator.queryRelay(_question.id).then((value) => {
@@ -107,13 +110,17 @@ class _QuestionDetailState extends State<QuestionDetail> {
     controller.text = "";
     commit = false;
 
-    RTMMessage.sendMessage(_question.user, controller.text.trim());
-    Shared.instance.getString("role").then((value) => {
-          if (value == "1")
-            DBOperator.insertMyRelayQuestion(_question, relay)
-          else
-            DBOperator.insertRelay(relay)
-        });
+    RTMMessage.sendMessage(_question.user, relay.toJsonStr(), () => {
+      Shared.instance.getString("role").then((value) => {
+            if (value == "1")
+              DBOperator.insertMyRelayQuestion(_question, relay)
+            else
+              DBOperator.insertRelay(relay)
+          })
+    },() => {
+      FtToast.danger("消息发送失败！")
+    });
+
     this.setState(() {
       scrollController.jumpTo(
           this.context.size.height - SystemUtil.keyBoardHeight(context).bottom);
