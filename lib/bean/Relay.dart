@@ -47,11 +47,23 @@ class Relay {
   }
 
   String toJsonStr(){
-    return jsonEncode(<String,dynamic>{
-      'questionId': this.questionId,
-      'user':this.user,
-      'image': this.image,
-      'content' : this.content
-    });
+    var result = <String,dynamic> {};
+    if(questionId != null){
+      result['questionId'] = questionId;
+    }
+
+    if(user != null){
+      result['user'] = user;
+    }
+
+    if(image != null){
+      result['image'] = image;
+    }
+
+    if(content != null){
+      result['content'] = content;
+    }
+
+    return jsonEncode(result);
   }
 }

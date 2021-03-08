@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_app/utils/rtm_message.dart';
 
 final navGK = new GlobalKey<NavigatorState>();
 
@@ -15,6 +16,7 @@ Future<dynamic> pushRoute(Widget widget, {dynamic callback}) {
 }
 
 pushAndRemoveRoute(Widget widget) {
+  RTMMessage.logout();
   final route = new CupertinoPageRoute(
     builder: (BuildContext context) => widget,
     settings: new RouteSettings(

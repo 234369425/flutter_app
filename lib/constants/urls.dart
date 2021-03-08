@@ -1,4 +1,4 @@
-const _url_host = "http://82.156.28.208:8989";
+const _url_host = "https://flutter.eastapple.com";
 //const _url_host = "http://192.168.0.18:8989";
 const url_register = _url_host + "/register";
 const url_login = _url_host + "/login";

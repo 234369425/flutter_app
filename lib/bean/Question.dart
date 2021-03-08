@@ -8,6 +8,7 @@ class Question {
   String createTime;
   String content;
   String user;
+  String relayUser;
   int newMessage;
 
   Question(this.id, this.title, this.createTime, this.newMessage);

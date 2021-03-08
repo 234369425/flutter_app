@@ -9,6 +9,11 @@ class RTMMessage {
   static AgoraRtmClient _client;
   static var _channels = <String, AgoraRtmChannel>{};
 
+  static logout() async{
+    _client.logout();
+    _channels.clear();
+  }
+
   static init(String user) async {
     WidgetsFlutterBinding.ensureInitialized();
     _client =
