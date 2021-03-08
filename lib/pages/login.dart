@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_app/component/ui/header_bar.dart';
 import 'package:flutter_app/constants.dart';
@@ -16,8 +14,6 @@ import 'package:flutter_app/utils/system.dart';
 import 'package:flutter_app/utils/toast.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
-import 'dart:io' as IO;
 
 class LoginFrame extends StatefulWidget {
   @override
@@ -76,14 +72,14 @@ class Frame extends State<LoginFrame> {
         shared.saveString("role", role);
         shared.saveString("displayName", resp['data']['displayName']);
         pushAndRemoveRoute(ApplicationLayout(role));
-        RTMMessage.init();
+        RTMMessage.init(userName.text.trim());
       } else {
         FtToast.danger('用户名或密码错误！');
       }
       this.setState(() {
         this.loading = false;
       });
-    }, () {
+    }, (s) {
       FtToast.danger('无法连接服务器，请稍后再试！');
       this.setState(() {
         this.loading = false;

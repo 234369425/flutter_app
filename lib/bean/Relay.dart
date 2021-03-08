@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class Relay {
   int id;
   int questionId;
@@ -32,5 +34,24 @@ class Relay {
       return time.substring(time.indexOf(" "));
     }
     return time;
+  }
+
+  static Relay fromJson(Map<String,dynamic> json){
+    var relay = Relay();
+    relay.questionId = json['questionId'];
+    relay.user = json['user'];
+    relay.image = json['image'];
+    relay.content = json['content'];
+    relay.isRead = 0;
+    return relay;
+  }
+
+  String toJsonStr(){
+    return jsonEncode(<String,dynamic>{
+      'questionId': this.questionId,
+      'user':this.user,
+      'image': this.image,
+      'content' : this.content
+    });
   }
 }

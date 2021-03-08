@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -8,6 +9,7 @@ import 'package:flutter_app/component/ui/header_bar.dart';
 import 'package:flutter_app/constants/defaults.dart';
 import 'package:flutter_app/db/DBOpera.dart';
 import 'package:flutter_app/utils/Image.dart';
+import 'package:flutter_app/utils/rtm_message.dart';
 import 'package:flutter_app/utils/shared_util.dart';
 import 'package:flutter_app/utils/system.dart';
 import 'package:flutter_app/utils/toast.dart';
@@ -106,12 +108,16 @@ class _QuestionDetailState extends State<QuestionDetail> {
     controller.text = "";
     commit = false;
 
-    Shared.instance.getString("role").then((value) => {
-          if (value == "1")
-            DBOperator.insertMyRelayQuestion(_question, relay)
-          else
-            DBOperator.insertRelay(relay)
-        });
+    RTMMessage.sendMessage(_question.user, relay.toJsonStr(), () => {
+      Shared.instance.getString("role").then((value) => {
+            if (value == "1")
+              DBOperator.insertMyRelayQuestion(_question, relay)
+            else
+              DBOperator.insertRelay(relay)
+          })
+    },() => {
+      FtToast.danger("消息发送失败！")
+    });
     this.setState(() {
       scrollController.jumpTo(
           this.context.size.height - SystemUtil.keyBoardHeight(context).bottom);
