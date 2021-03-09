@@ -149,6 +149,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
 
   List<Widget> _createRowContent(int index, double width) {
     Relay q = relays[index];
+    Relay q = relays[index];
     var res = <Widget>[];
     var current = relays[index];
     var showTime = q.timeString();
