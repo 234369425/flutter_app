@@ -44,6 +44,7 @@ class Relay {
     relay.image = json['image'];
     relay.content = json['content'];
     relay.title = json['title'];
+    relay.time = json['time'];
     relay.isRead = 0;
     return relay;
   }
@@ -68,6 +69,10 @@ class Relay {
 
     if(title != null){
       result['title'] = title;
+    }
+
+    if(time != null){
+      result['time'] = time;
     }
 
     return jsonEncode(result);
