@@ -50,6 +50,11 @@ class _QuestionDetailState extends State<QuestionDetail> {
                       _question.id = value.id;
                       _question.title = value.title;
                       relays.add(value.toRelay());
+                      RTMMessage.registerCurrent("", value.title, (relay){
+                        this.setState(() {
+                          relays.add(relay);
+                        });
+                      });
                       DBOperator.queryRelay(value.id).then((value) => {
                             this.setState(() {
                               if (value.isNotEmpty) {
@@ -72,6 +77,11 @@ class _QuestionDetailState extends State<QuestionDetail> {
               _question = this.widget.q,
               relayTo = this.widget.q.user,
               this.relays.add(_question.toRelay()),
+              RTMMessage.registerCurrent(relayTo, _question.title, (relay){
+                this.setState(() {
+                  relays.add(relay);
+                });
+              }),
               DBOperator.queryRelay(_question.id).then((value) => {
                     this.setState(() {
                       relays.addAll(value);

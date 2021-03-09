@@ -9,10 +9,25 @@ import 'package:flutter_app/db/DBOpera.dart';
 class RTMMessage {
   static AgoraRtmClient _client;
   static var _channels = <String, AgoraRtmChannel>{};
+  static String user = "";
+  static String title = "";
+  static dynamic callback = (dynamic s){};
 
   static logout() async{
     _client.logout();
     _channels.clear();
+  }
+
+  static registerCurrent(String u,String t, dynamic cb){
+    user = u;
+    title = t;
+    callback = cb;
+  }
+
+  static unRegister(){
+    user = '';
+    title = '';
+    callback = (dynamic s){};
   }
 
   static init(String user) async {
@@ -27,7 +42,11 @@ class RTMMessage {
       try {
         var mess = jsonDecode(message.text);
         mess['user'] = peerId;
-        DBOperator.insertRelay(Relay.fromJson(mess));
+        var relay = Relay.fromJson(mess);
+        if(mess['title'] == title){
+          callback(relay);
+        }
+        DBOperator.insertRelay(relay);
       } catch (e) {
         print(e);
       }

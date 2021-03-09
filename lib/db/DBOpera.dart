@@ -144,6 +144,7 @@ class DBOperator {
 
     params.clear();
     params.add(q.id);
+    params.add(null);
     params.add(relay.image);
     params.add(relay.content);
     await database.rawInsert(
