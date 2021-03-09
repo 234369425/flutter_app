@@ -169,7 +169,6 @@ class _QuestionDetailState extends State<QuestionDetail> {
         ),
       );
     }
-    UserHeader.init();
     res.add(Container(
         width: width,
         decoration: BoxDecoration(
