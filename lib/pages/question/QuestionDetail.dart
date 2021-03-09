@@ -50,6 +50,9 @@ class _QuestionDetailState extends State<QuestionDetail> {
                       relays.add(value.toRelay());
                       DBOperator.queryRelay(value.id).then((value) => {
                             this.setState(() {
+                              if (value.isNotEmpty) {
+                                canRelay = true;
+                              }
                               relays.addAll(value);
                             })
                           });
@@ -110,16 +113,18 @@ class _QuestionDetailState extends State<QuestionDetail> {
     controller.text = "";
     commit = false;
 
-    RTMMessage.sendMessage(_question.user, relay.toJsonStr(), () => {
-      Shared.instance.getString("role").then((value) => {
-            if (value == "1")
-              DBOperator.insertMyRelayQuestion(_question, relay)
-            else
-              DBOperator.insertRelay(relay)
-          })
-    },() => {
-      FtToast.danger("消息发送失败！")
-    });
+    RTMMessage.sendMessage(
+        _question.user,
+        relay.toJsonStr(),
+        () => {
+              Shared.instance.getString("role").then((value) => {
+                    if (value == "1")
+                      DBOperator.insertMyRelayQuestion(_question, relay)
+                    else
+                      DBOperator.insertRelay(relay)
+                  })
+            },
+        () => {FtToast.danger("消息发送失败！")});
 
     this.setState(() {
       scrollController.jumpTo(
@@ -297,16 +302,16 @@ class _QuestionDetailState extends State<QuestionDetail> {
                                 text: '发送',
                                 width: 5,
                                 style: TextStyle(color: Colors.white),
-                                onTap: _sendMessage,
+                                onTap: canRelay ? _sendMessage : null,
                               )
                             : Row(children: [
                                 IconButton(
                                   icon: Icon(Icons.camera_alt),
-                                  onPressed: _openCamera,
+                                  onPressed: canRelay ? _openCamera : null,
                                 ),
                                 IconButton(
                                     icon: Icon(Icons.photo),
-                                    onPressed: _openGallery)
+                                    onPressed: canRelay ? _openGallery : null)
                               ]))
                   ],
                 ),

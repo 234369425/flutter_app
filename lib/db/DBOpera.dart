@@ -17,7 +17,6 @@ class DBOperator {
             'title TEXT,'
             'image TEXT,'
             'content TEXT,'
-            'relay_user TEXT,'
             'create_time TIMESTAMP default (datetime(\'now\', \'localtime\')),'
             'new_message INTEGER default 0)');
 
@@ -82,7 +81,7 @@ class DBOperator {
   static Future<List<Question>> listQuestion(int offset) async {
     var database = await init();
     List<Map> list = await database.rawQuery(
-        "select id, title, create_time, new_message,relay_user from Question where id in (select id "
+        "select id, title, create_time, new_message from Question where id in (select id "
                 "from Question order by create_time desc ,new_message desc limit 8 offset " +
             offset.toString() +
             ")");
@@ -90,7 +89,6 @@ class DBOperator {
     for (var v in list) {
       var q = new Question(v["id"], v["title"], v["create_time"],
           v["new_message"] == null ? 0 : v["new_message"]);
-      q.relayUser = v["relay_user"];
       result.add(q);
     }
     return result;
