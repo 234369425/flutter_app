@@ -26,6 +26,7 @@ class RTMMessage {
       print("Peer msg: " + peerId + ", msg: " + message.text);
       try {
         var mess = jsonDecode(message.text);
+        mess['user'] = peerId;
         DBOperator.insertRelay(Relay.fromJson(mess));
       } catch (e) {
         print(e);

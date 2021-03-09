@@ -3,6 +3,7 @@ import 'dart:convert';
 class Relay {
   int id;
   int questionId;
+  String title;
   String user;
   String image;
   String content;

@@ -107,6 +107,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
     var relay = Relay();
     relay.questionId = _question.id;
     relay.content = controller.text;
+    relay.title = this.widget.q.title;
     relay.time = DateTime.now().toString();
     relay.time = relay.time.substring(0, relay.time.indexOf('.'));
     relays.add(relay);
