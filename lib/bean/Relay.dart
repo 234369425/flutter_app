@@ -65,6 +65,10 @@ class Relay {
       result['content'] = content;
     }
 
+    if(title != null){
+      result['title'] = title;
+    }
+
     return jsonEncode(result);
   }
 }
