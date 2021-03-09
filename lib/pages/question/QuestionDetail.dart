@@ -36,6 +36,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
   var head = headPortrait;
   var _loading = true;
   var canRelay = false;
+  var relayTo = '';
   FocusNode focusNode = FocusNode();
   final ImagePicker picker = ImagePicker();
 
@@ -53,6 +54,11 @@ class _QuestionDetailState extends State<QuestionDetail> {
                               if (value.isNotEmpty) {
                                 canRelay = true;
                               }
+                              value.forEach((element) {
+                                if(element.user != null){
+                                  relayTo = element.user;
+                                }
+                              });
                               relays.addAll(value);
                             })
                           });
@@ -63,6 +69,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
             {
               canRelay = true,
               _question = this.widget.q,
+              relayTo = this.widget.q.user,
               this.relays.add(_question.toRelay()),
               DBOperator.queryRelay(_question.id).then((value) => {
                     this.setState(() {
@@ -115,7 +122,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
     commit = false;
 
     RTMMessage.sendMessage(
-        _question.user,
+        relayTo,
         relay.toJsonStr(),
         () => {
               Shared.instance.getString("role").then((value) => {

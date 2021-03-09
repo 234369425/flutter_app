@@ -104,8 +104,10 @@ class DBOperator {
 
   static void insertRelay(Relay relay) async {
     var database = await init();
+    var qid = await database.rawQuery("select id from Question where title = ?",[relay.title]);
+    var id = qid.first["id"];
     var params = [];
-    params.add(relay.questionId);
+    params.add(id);
     params.add(relay.user);
     params.add(relay.image);
     params.add(relay.content);

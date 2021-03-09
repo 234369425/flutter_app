@@ -43,6 +43,7 @@ class Relay {
     relay.user = json['user'];
     relay.image = json['image'];
     relay.content = json['content'];
+    relay.title = json['title'];
     relay.isRead = 0;
     return relay;
   }
