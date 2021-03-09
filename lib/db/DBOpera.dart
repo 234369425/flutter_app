@@ -51,11 +51,11 @@ class DBOperator {
     return database;
   }
 
-  static Future<List<Question>> listMyRelayQuestion(int offset) async{
+  static Future<List<Question>> listMyRelayQuestion(int offset) async {
     var database = await init();
     List<Map> list = await database.rawQuery(
         "select id,user, title, content, create_time, new_message from MyRelayQuestion where id in (select id "
-            "from MyRelayQuestion order by create_time desc ,new_message desc limit 8 offset " +
+                "from MyRelayQuestion order by create_time desc ,new_message desc limit 8 offset " +
             offset.toString() +
             ")");
     var result = <Question>[];
@@ -69,10 +69,10 @@ class DBOperator {
     return result;
   }
 
-
   static Future<int> queryMyRelayCount() async {
     var database = await init();
-    var list = await database.rawQuery("select count(*) as ct from MyRelayQuestion");
+    var list =
+        await database.rawQuery("select count(*) as ct from MyRelayQuestion");
     for (var v in list) {
       return v["ct"];
     }
@@ -104,7 +104,13 @@ class DBOperator {
 
   static void insertRelay(Relay relay) async {
     var database = await init();
-    var qid = await database.rawQuery("select id from Question where title = ?",[relay.title]);
+    var qid = await database
+        .rawQuery("select id from Question where title = ?", [relay.title]);
+    if (qid.isEmpty) {
+      qid = await database.rawQuery(
+          "select id from MyRelayQuestion where title = ? and user = ?",
+          [relay.title, relay.user]);
+    }
     var id = qid.first["id"];
     var params = [];
     params.add(id);
@@ -116,16 +122,16 @@ class DBOperator {
         params);
   }
 
-  static void insertMyRelayQuestion(Question q,Relay relay) async{
-
+  static void insertMyRelayQuestion(Question q, Relay relay) async {
     var database = await init();
 
-    var inserted = await database.rawQuery('select * from MyRelayQuestion where id = ?',[q.id]);
+    var inserted = await database
+        .rawQuery('select * from MyRelayQuestion where id = ?', [q.id]);
     var params = [];
 
-    if(inserted.isEmpty) {
+    if (inserted.isEmpty) {
       params.add(q.id);
-      params.add(await Shared.instance.getAccount());
+      params.add(q.user);
       params.add(q.title);
       params.add(q.head);
       params.add(q.image);
@@ -138,13 +144,11 @@ class DBOperator {
 
     params.clear();
     params.add(q.id);
-    params.add(relay.user);
     params.add(relay.image);
     params.add(relay.content);
     await database.rawInsert(
         "insert into Relay(question_id,user,image,content,receive_time) values (?,?,?,?,datetime(\'now\', \'localtime\'))",
         params);
-
   }
 
   static Future<List<Relay>> queryRelay(int id) async {

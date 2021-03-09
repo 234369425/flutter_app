@@ -13,6 +13,7 @@ import 'package:flutter_app/utils/rtm_message.dart';
 import 'package:flutter_app/utils/shared_util.dart';
 import 'package:flutter_app/utils/system.dart';
 import 'package:flutter_app/utils/toast.dart';
+import 'package:flutter_app/utils/user_header.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:keyboard_manager/keyboard_manager.dart';
 
@@ -167,6 +168,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
         ),
       );
     }
+    UserHeader.init();
     res.add(Container(
         width: width,
         decoration: BoxDecoration(
