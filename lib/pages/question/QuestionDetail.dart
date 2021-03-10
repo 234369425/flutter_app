@@ -34,7 +34,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
   ScrollController scrollController = new ScrollController();
   var relays = <Relay>[];
   var commit = false;
-  var head = headPortrait;
+  var myselfHead = headPortrait;
   var _loading = true;
   var canRelay = false;
   var relayTo = '';
@@ -178,7 +178,6 @@ class _QuestionDetailState extends State<QuestionDetail> {
         ),
       );
     }
-    UserHeader.init();
     res.add(Container(
         width: width,
         decoration: BoxDecoration(
@@ -201,8 +200,12 @@ class _QuestionDetailState extends State<QuestionDetail> {
   _createRow(BuildContext context, int index) {
     var size = MediaQuery.of(context).size;
     var width = size.width / 12 * 7.8;
-    Relay q = relays[index];
-    GlobalKey textKey = GlobalKey();
+    Relay r = relays[index];
+    var self = r.user == null;
+    var targetHead = headPortrait;
+    if(!self) {
+      targetHead = UserHeader.get(r.user)??headPortrait;
+    }
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -217,8 +220,8 @@ class _QuestionDetailState extends State<QuestionDetail> {
                       height: 40.0,
                       child: new ClipRRect(
                         borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                        child: q.user != null
-                            ? ImageUtils.dynamicAvatar(head)
+                        child: r.user != null
+                            ? ImageUtils.dynamicAvatar(targetHead)
                             : Text(''),
                       ),
                     )))),
@@ -239,8 +242,8 @@ class _QuestionDetailState extends State<QuestionDetail> {
                       height: 40.0,
                       child: new ClipRRect(
                         borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                        child: q.user == null
-                            ? ImageUtils.dynamicAvatar(head)
+                        child: r.user == null
+                            ? ImageUtils.dynamicAvatar(myselfHead)
                             : Text(''),
                       ),
                     ))))
@@ -253,7 +256,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
     Shared.instance.getString("head").then((value) => {
           this.setState(() {
             if (value != null) {
-              head = value;
+              myselfHead = value;
             }
           })
         });
