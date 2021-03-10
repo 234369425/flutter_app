@@ -19,6 +19,6 @@ class UserHeader{
   }
 
   static String get(String user){
-    return headers[user]??user;
+    return headers[user];
   }
 }
