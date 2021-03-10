@@ -16,6 +16,7 @@ import 'package:flutter_app/utils/toast.dart';
 import 'package:flutter_app/utils/user_header.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:keyboard_manager/keyboard_manager.dart';
+import 'package:keyboard_visibility/keyboard_visibility.dart';
 
 class QuestionDetail extends StatefulWidget {
   final Question q;
@@ -37,6 +38,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
   var myselfHead = headPortrait;
   var _loading = true;
   var canRelay = false;
+  var keyBoardVisible = false;
   var relayTo = '';
   FocusNode focusNode = FocusNode();
   final ImagePicker picker = ImagePicker();
@@ -65,7 +67,10 @@ class _QuestionDetailState extends State<QuestionDetail> {
                                   relayTo = element.user;
                                 }
                               });
-                              relays.addAll(value);
+                              this.setState(() {
+                                relays.addAll(value);
+                                _scrollToBottom();
+                              });
                             })
                           });
                     })
@@ -85,6 +90,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
               DBOperator.queryRelay(_question.id).then((value) => {
                     this.setState(() {
                       relays.addAll(value);
+                      _scrollToBottom();
                     })
                   })
             }
@@ -109,52 +115,52 @@ class _QuestionDetailState extends State<QuestionDetail> {
     String imageStr = await compressToString(File(image.path));
 
     var relay = Relay();
-    relay.questionId = _question.id;
     relay.image = imageStr;
+    _sendRtmMessage(relay);
+  }
+
+  _sendRtmMessage(Relay relay){
+
+    relay.questionId = _question.id;
+    relay.title = this.widget.q.title;
     relay.time = DateTime.now().toString();
     relay.time = relay.time.substring(0, relay.time.indexOf('.'));
     relays.add(relay);
-    DBOperator.insertRelay(relay);
+
+    RTMMessage.sendMessage(
+        relayTo,
+        relay.toJsonStr(),
+            () => {
+          Shared.instance.getString("role").then((value) => {
+            if (value == "1")
+              DBOperator.insertMyRelayQuestion(_question, relay)
+            else
+              DBOperator.insertRelay(relay)
+          })
+        },
+            () => {FtToast.danger("消息发送失败！")});
+
+    this.setState(() {
+      _scrollToBottom();
+    });
   }
 
   _sendMessage() {
     if (controller.text.trim() == "") {
       return;
     }
-
     var relay = Relay();
-    relay.questionId = _question.id;
     relay.content = controller.text;
-    relay.title = this.widget.q.title;
-    relay.time = DateTime.now().toString();
-    relay.time = relay.time.substring(0, relay.time.indexOf('.'));
-    relays.add(relay);
     controller.text = "";
     commit = false;
-
-    RTMMessage.sendMessage(
-        relayTo,
-        relay.toJsonStr(),
-        () => {
-              Shared.instance.getString("role").then((value) => {
-                    if (value == "1")
-                      DBOperator.insertMyRelayQuestion(_question, relay)
-                    else
-                      DBOperator.insertRelay(relay)
-                  })
-            },
-        () => {FtToast.danger("消息发送失败！")});
-
-    this.setState(() {
-      scrollController.jumpTo(
-          this.context.size.height - SystemUtil.keyBoardHeight(context).bottom);
-    });
+    _sendRtmMessage(relay);
 //    focusNode.unfocus();
   }
 
-  _scrollToBottom() {
-    scrollController.jumpTo(
-        this.context.size.height - SystemUtil.keyBoardHeight(context).bottom);
+  _scrollToBottom({height:0}) {
+    Future.delayed(Duration(milliseconds: 50) ,(){
+      scrollController.jumpTo(scrollController.position.maxScrollExtent - height);
+    });
   }
 
   List<Widget> _createRowContent(int index, double width) {
@@ -274,7 +280,27 @@ class _QuestionDetailState extends State<QuestionDetail> {
 //        getListData();
       }
     });
+    KeyboardVisibilityNotification().addNewListener(
+      onChange: (bool visible) {
+        this.setState(() {
+          if(visible) {
+            Future.delayed(Duration(milliseconds: 100) ,()
+            {
+              _scrollToBottom(height: 5);
+            });
+          }
+          //keyBoardVisible = visible;
+        });
+      },
+    );
     super.initState();
+  }
+
+
+  @override
+  void dispose() {
+    super.dispose();
+    RTMMessage.unRegister();
   }
 
   _addPressed() {}

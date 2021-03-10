@@ -16,6 +16,7 @@ import 'package:flutter_app/provider/global_model.dart';
 import 'package:flutter_app/utils/Image.dart';
 import 'package:flutter_app/utils/http_client.dart';
 import 'package:flutter_app/utils/route.dart';
+import 'package:flutter_app/utils/rtm_message.dart';
 import 'package:flutter_app/utils/shared_util.dart';
 import 'package:flutter_app/utils/toast.dart';
 import 'package:image_picker/image_picker.dart';
@@ -137,7 +138,10 @@ class _MyPageState extends State<MyPage> {
                 Expanded(
                     child: RaisedButton(
                   child: Text('退出登陆'),
-                  onPressed: () => pushAndRemoveRoute(new LoginFrame()),
+                  onPressed: () => {
+                    RTMMessage.logout(),
+                    pushAndRemoveRoute(new LoginFrame())
+                  },
                 ))
               ],
             )));

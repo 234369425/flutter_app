@@ -16,7 +16,6 @@ Future<dynamic> pushRoute(Widget widget, {dynamic callback}) {
 }
 
 pushAndRemoveRoute(Widget widget) {
-  RTMMessage.logout();
   final route = new CupertinoPageRoute(
     builder: (BuildContext context) => widget,
     settings: new RouteSettings(
