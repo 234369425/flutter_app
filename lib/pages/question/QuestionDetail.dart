@@ -157,7 +157,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
     if (relays.length == 1) {
       Shared.instance.getAccount().then((value) => {
             HttpClient.send(url_update_question_relay,
-                {'user': value, 'qid': _question.id}, (d) {
+                {'user': value, 'qid': _question.id.toString()}, (d) {
 
                 }, (d) {
               FtToast.danger(d);
