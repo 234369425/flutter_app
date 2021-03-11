@@ -148,7 +148,7 @@ class _QuestionListState extends State<QuestionList> {
                   }
                 }, (e) {
                   _loading = false;
-                  FtToast.danger("无法连接服务器，请稍后重试");
+                  FtToast.danger(e.toString());
                 })
               }
             else
@@ -174,8 +174,8 @@ class _QuestionListState extends State<QuestionList> {
   @override
   Widget build(BuildContext context) {
     var actions = role == "1"
-        ? []
-        : [
+        ? <Widget>[]
+        : <Widget>[
             IconButton(
               icon: Icon(Icons.add),
               color: Colors.blueAccent,

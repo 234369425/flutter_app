@@ -10,7 +10,7 @@ class Question {
   String user;
   String relayUser;
   int newMessage;
-  int ct;
+  int ct = 0;
 
   Question(this.id, this.title, this.createTime, this.newMessage);
 
