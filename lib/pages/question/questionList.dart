@@ -63,6 +63,7 @@ class _QuestionListState extends State<QuestionList> {
       }
     });
     RTMMessage.registerQuestionList((Relay r) {
+      if(this.mounted)
       dataList.forEach((element) {
         if (element.title == r.title) {
           element.ct++;
@@ -86,11 +87,11 @@ class _QuestionListState extends State<QuestionList> {
   Widget _buildRow(Question q) {
     ListTile tile = ListTile(
         title: Text(q.title),
-        leading: CircleAvatar(
+        leading: role == "0" ? CircleAvatar(
           backgroundColor: q.ct == 0 ? Colors.grey : Colors.red,
           child: Text(q.ct.toString()),
           foregroundColor: Colors.white,
-        ),
+        ): null,
         trailing: q.ct > 0 ? Icon(Icons.announcement_rounded) : null,
         subtitle: Text(q.createTime ?? ''),
         onTap: () {
@@ -142,6 +143,7 @@ class _QuestionListState extends State<QuestionList> {
                       q.user = question["user"];
                       dataList.add(q);
                     }
+                    if(this.mounted)
                     this.setState(() {
                       _sortDataList();
                     });

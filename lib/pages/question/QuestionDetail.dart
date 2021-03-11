@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -7,15 +6,16 @@ import 'package:flutter_app/bean/Relay.dart';
 import 'package:flutter_app/component/ui/custom_button.dart';
 import 'package:flutter_app/component/ui/header_bar.dart';
 import 'package:flutter_app/constants/defaults.dart';
+import 'package:flutter_app/constants/urls.dart';
 import 'package:flutter_app/db/DBOpera.dart';
 import 'package:flutter_app/utils/Image.dart';
+import 'package:flutter_app/utils/http_client.dart';
 import 'package:flutter_app/utils/rtm_message.dart';
 import 'package:flutter_app/utils/shared_util.dart';
 import 'package:flutter_app/utils/system.dart';
 import 'package:flutter_app/utils/toast.dart';
 import 'package:flutter_app/utils/user_header.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:keyboard_manager/keyboard_manager.dart';
 import 'package:keyboard_visibility/keyboard_visibility.dart';
 
 class QuestionDetail extends StatefulWidget {
@@ -52,7 +52,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
                       _question.id = value.id;
                       _question.title = value.title;
                       relays.add(value.toRelay());
-                      RTMMessage.registerCurrent("", value.title, (relay){
+                      RTMMessage.registerCurrent("", value.title, (relay) {
                         this.setState(() {
                           relays.add(relay);
                           _scrollToBottom();
@@ -64,7 +64,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
                                 canRelay = true;
                               }
                               value.forEach((element) {
-                                if(element.user != null){
+                                if (element.user != null) {
                                   relayTo = element.user;
                                 }
                               });
@@ -83,7 +83,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
               _question = this.widget.q,
               relayTo = this.widget.q.user,
               this.relays.add(_question.toRelay()),
-              RTMMessage.registerCurrent(relayTo, _question.title, (relay){
+              RTMMessage.registerCurrent(relayTo, _question.title, (relay) {
                 this.setState(() {
                   relays.add(relay);
                   _scrollToBottom();
@@ -121,8 +121,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
     _sendRtmMessage(relay);
   }
 
-  _sendRtmMessage(Relay relay){
-
+  _sendRtmMessage(Relay relay) {
     relay.questionId = _question.id;
     relay.title = this.widget.q.title;
     relay.time = DateTime.now().toString();
@@ -132,15 +131,15 @@ class _QuestionDetailState extends State<QuestionDetail> {
     RTMMessage.sendMessage(
         relayTo,
         relay.toJsonStr(),
-            () => {
-          Shared.instance.getString("role").then((value) => {
-            if (value == "1")
-              DBOperator.insertMyRelayQuestion(_question, relay)
-            else
-              DBOperator.insertRelay(relay)
-          })
-        },
-            () => {FtToast.danger("消息发送失败！")});
+        () => {
+              Shared.instance.getString("role").then((value) => {
+                    if (value == "1")
+                      DBOperator.insertMyRelayQuestion(_question, relay)
+                    else
+                      DBOperator.insertRelay(relay)
+                  })
+            },
+        () => {FtToast.danger("消息发送失败！")});
 
     this.setState(() {
       _scrollToBottom();
@@ -155,13 +154,24 @@ class _QuestionDetailState extends State<QuestionDetail> {
     relay.content = controller.text;
     controller.text = "";
     commit = false;
+    if (relays.length == 1) {
+      Shared.instance.getAccount().then((value) => {
+            HttpClient.send(url_update_question_relay,
+                {'user': value, 'qid': _question.id}, (d) {
+
+                }, (d) {
+              FtToast.danger(d);
+            })
+          });
+    }
     _sendRtmMessage(relay);
 //    focusNode.unfocus();
   }
 
-  _scrollToBottom({height:0}) {
-    Future.delayed(Duration(milliseconds: 50) ,(){
-      scrollController.jumpTo(scrollController.position.maxScrollExtent - height);
+  _scrollToBottom({height: 0}) {
+    Future.delayed(Duration(milliseconds: 50), () {
+      scrollController
+          .jumpTo(scrollController.position.maxScrollExtent - height);
     });
   }
 
@@ -211,8 +221,8 @@ class _QuestionDetailState extends State<QuestionDetail> {
     Relay r = relays[index];
     var self = r.user == null;
     var targetHead = headPortrait;
-    if(!self) {
-      targetHead = UserHeader.get(r.user)??headPortrait;
+    if (!self) {
+      targetHead = UserHeader.get(r.user) ?? headPortrait;
     }
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -285,9 +295,8 @@ class _QuestionDetailState extends State<QuestionDetail> {
     KeyboardVisibilityNotification().addNewListener(
       onChange: (bool visible) {
         this.setState(() {
-          if(visible) {
-            Future.delayed(Duration(milliseconds: 100) ,()
-            {
+          if (visible) {
+            Future.delayed(Duration(milliseconds: 100), () {
               _scrollToBottom(height: 5);
             });
           }
@@ -297,7 +306,6 @@ class _QuestionDetailState extends State<QuestionDetail> {
     );
     super.initState();
   }
-
 
   @override
   void dispose() {

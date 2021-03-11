@@ -1,13 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/component/ui/header_bar.dart';
-import 'package:flutter_app/constants/urls.dart';
 import 'package:flutter_app/db/DBOpera.dart';
 import 'package:flutter_app/bean/Question.dart';
 import 'package:flutter_app/pages/question/QuestionDetail.dart';
-import 'package:flutter_app/pages/question/createQuestion.dart';
-import 'package:flutter_app/utils/http_client.dart';
-import 'package:flutter_app/utils/shared_util.dart';
-import 'package:flutter_app/utils/toast.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_app/utils/route.dart';
 
@@ -24,14 +19,6 @@ class _MyRelayQuestionListState extends State<MyRelayQuestionList> {
   var dataList = [];
   var count = 0;
   var _loading = false;
-
-  void _toAskQuestion() {
-    pushRoute(QuestionWidget(topButton: true), callback: () {
-      setState(() {
-        print('refresh state');
-      });
-    });
-  }
 
   @override
   void initState() {
@@ -106,11 +93,7 @@ class _MyRelayQuestionListState extends State<MyRelayQuestionList> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: new HeaderBar(title: '我关注的问题', rightDMActions: [
-          IconButton(
-            icon: Icon(Icons.add),
-            color: Colors.blueAccent,
-            onPressed: _toAskQuestion,
-          )
+
         ]),
         body: new ListView.builder(
           padding: const EdgeInsets.all(10.0),
