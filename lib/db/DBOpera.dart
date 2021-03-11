@@ -157,7 +157,7 @@ class DBOperator {
     params.add(relay.image);
     params.add(relay.content);
     await database.rawInsert(
-        "insert into Relay(question_id,user,image,content,receive_time) values (?,?,?,?,datetime(\'now\', \'localtime\'))",
+        "insert into Relay(question_id,user,image,content,receive_time,is_read) values (?,?,?,?,datetime(\'now\', \'localtime\'),1)",
         params);
   }
 
