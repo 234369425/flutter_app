@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/bean/Relay.dart';
 import 'package:flutter_app/component/ui/header_bar.dart';
 import 'package:flutter_app/db/DBOpera.dart';
 import 'package:flutter_app/bean/Question.dart';
 import 'package:flutter_app/pages/question/QuestionDetail.dart';
+import 'package:flutter_app/utils/rtm_message.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_app/utils/route.dart';
 
@@ -38,12 +40,29 @@ class _MyRelayQuestionListState extends State<MyRelayQuestionList> {
 //        getListData();
       }
     });
+    RTMMessage.registerQuestionList((Relay r) {
+      if(this.mounted)
+        dataList.forEach((element) {
+          if (element.title == r.title) {
+            element.ct++;
+            this.setState(() {
+              _sortDataList();
+            });
+            return;
+          }
+        });
+    });
     super.initState();
+  }
+
+  void _sortDataList() {
+    dataList.sort((q, q1) => q1.ct - q.ct);
   }
 
   @override
   void dispose() {
     super.dispose();
+    RTMMessage.unRegisterQuestionList();
     print('dispose');
   }
 
@@ -51,12 +70,11 @@ class _MyRelayQuestionListState extends State<MyRelayQuestionList> {
     ListTile tile = ListTile(
         title: Text(q.title),
         leading: CircleAvatar(
-          backgroundColor:
-              q.newMessage == 0 ? Colors.indigoAccent : Colors.grey,
-          child: Text(q.newMessage.toString()),
+          backgroundColor: q.ct == 0 ? Colors.black12 : Colors.orangeAccent,
+          child: Text(q.ct.toString()),
           foregroundColor: Colors.white,
         ),
-        trailing: q.newMessage > 0 ? Icon(Icons.announcement_rounded) : null,
+        trailing: q.ct > 0 ? Icon(Icons.announcement_rounded) : null,
         subtitle: Text(q.createTime ?? ''),
         onTap: () {
           _showDetail(q);
@@ -80,10 +98,12 @@ class _MyRelayQuestionListState extends State<MyRelayQuestionList> {
               {
                 this.setState(() {
                   dataList.addAll(value);
+                  _sortDataList();
                 })
               }
             else
               {dataList.addAll(value)},
+            _sortDataList(),
             _loading = false
           });
     }
@@ -92,9 +112,7 @@ class _MyRelayQuestionListState extends State<MyRelayQuestionList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: new HeaderBar(title: '我关注的问题', rightDMActions: [
-
-        ]),
+        appBar: new HeaderBar(title: '我关注的问题', rightDMActions: []),
         body: new ListView.builder(
           padding: const EdgeInsets.all(10.0),
           itemCount: dataList.length,
