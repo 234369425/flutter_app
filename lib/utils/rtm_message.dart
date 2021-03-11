@@ -12,10 +12,19 @@ class RTMMessage {
   static String user = "";
   static String title = "";
   static dynamic callback = (dynamic s){};
+  static dynamic listCallback = (dynamic s){};
 
   static logout() async{
     _client.logout();
     _channels.clear();
+  }
+
+  static registerQuestionList(dynamic fn){
+    listCallback = fn;
+  }
+
+  static unRegisterQuestionList(){
+    listCallback = (dynamic s){};
   }
 
   static registerCurrent(String u,String t, dynamic cb){
@@ -46,6 +55,7 @@ class RTMMessage {
         if(mess['title'] == title){
           callback(relay);
         }
+        listCallback(relay);
         DBOperator.insertRelay(relay);
       } catch (e) {
         print(e);

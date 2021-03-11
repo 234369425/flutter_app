@@ -55,6 +55,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
                       RTMMessage.registerCurrent("", value.title, (relay){
                         this.setState(() {
                           relays.add(relay);
+                          _scrollToBottom();
                         });
                       });
                       DBOperator.queryRelay(value.id).then((value) => {
@@ -85,6 +86,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
               RTMMessage.registerCurrent(relayTo, _question.title, (relay){
                 this.setState(() {
                   relays.add(relay);
+                  _scrollToBottom();
                 });
               }),
               DBOperator.queryRelay(_question.id).then((value) => {

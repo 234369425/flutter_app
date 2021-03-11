@@ -107,13 +107,14 @@ class _MyPageState extends State<MyPage> {
         onPressed: () =>
             pushRoute(new ChangeName(name), callback: {_loadInfo()}),
       ),
+      /*
       new LabelRow(
         label: '班级',
         isLine: true,
         isRight: true,
         rValue: grade,
         onPressed: () => pushRoute(new ChangeGrade()),
-      ),
+      ),*/
     ];
 
     return new Column(children: content);

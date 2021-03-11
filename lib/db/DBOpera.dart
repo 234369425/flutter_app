@@ -81,7 +81,9 @@ class DBOperator {
   static Future<List<Question>> listQuestion(int offset) async {
     var database = await init();
     List<Map> list = await database.rawQuery(
-        "select id, title, create_time, new_message from Question where id in (select id "
+        "select id, title, create_time, new_message, "
+            "(select count(*) from Relay where (is_read = 0 or is_read = null) and question_id = q.id) as ct "
+            " from Question q where id in (select id "
                 "from Question order by create_time desc ,new_message desc limit 8 offset " +
             offset.toString() +
             ")");
@@ -89,6 +91,7 @@ class DBOperator {
     for (var v in list) {
       var q = new Question(v["id"], v["title"], v["create_time"],
           v["new_message"] == null ? 0 : v["new_message"]);
+      q.ct = v["ct"];
       result.add(q);
     }
     return result;
@@ -117,8 +120,9 @@ class DBOperator {
     params.add(relay.user);
     params.add(relay.image);
     params.add(relay.content);
+    params.add(relay.user == null ? "1":"0");
     await database.rawInsert(
-        "insert into Relay(question_id,user,image,content,receive_time) values (?,?,?,?,datetime(\'now\', \'localtime\'))",
+        "insert into Relay(question_id,user,image,content,receive_time,is_read) values (?,?,?,?,datetime(\'now\', \'localtime\'),?)",
         params);
   }
 
@@ -158,6 +162,7 @@ class DBOperator {
     params.add(id);
     List<Map> relays = await database.rawQuery(
         "select * from Relay where question_id = ?", params);
+    await database.rawQuery("update Relay set is_read = '1'  where question_id = ?", params);
     List<Relay> result = List<Relay>();
     for (var relay in relays) {
       Relay r = Relay();

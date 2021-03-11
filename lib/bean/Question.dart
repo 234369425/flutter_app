@@ -10,6 +10,7 @@ class Question {
   String user;
   String relayUser;
   int newMessage;
+  int ct;
 
   Question(this.id, this.title, this.createTime, this.newMessage);
 

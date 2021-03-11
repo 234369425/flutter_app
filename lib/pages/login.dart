@@ -114,6 +114,7 @@ class Frame extends State<LoginFrame> {
               TextField(
                 keyboardType: TextInputType.visiblePassword,
                 controller: password,
+                obscureText: true,
                 focusNode: passwordFocus,
                 decoration: InputDecoration(
                     labelText: '密码', icon: Icon(Icons.lock_outline_sharp)),

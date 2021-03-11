@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/bean/Relay.dart';
 import 'package:flutter_app/component/ui/header_bar.dart';
 import 'package:flutter_app/constants/urls.dart';
 import 'package:flutter_app/db/DBOpera.dart';
@@ -6,6 +7,7 @@ import 'package:flutter_app/bean/Question.dart';
 import 'package:flutter_app/pages/question/QuestionDetail.dart';
 import 'package:flutter_app/pages/question/createQuestion.dart';
 import 'package:flutter_app/utils/http_client.dart';
+import 'package:flutter_app/utils/rtm_message.dart';
 import 'package:flutter_app/utils/shared_util.dart';
 import 'package:flutter_app/utils/toast.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -24,19 +26,28 @@ class _QuestionListState extends State<QuestionList> {
   var dataList = [];
   var count = 0;
   var _loading = false;
+  var role = "0";
 
   void _toAskQuestion() {
     pushRoute(QuestionWidget(topButton: true), callback: () {
       setState(() {
+        dataList.clear();
+        _queryQuestions();
         print('refresh state');
       });
     });
   }
 
+  void _sortDataList() {
+    dataList.sort((q, q1) => q1.ct - q.ct);
+  }
+
   @override
   void initState() {
     _queryQuestions();
-      DBOperator.queryCount().then((value) => {count = value});
+
+    Shared.instance.getString("role").then((value) => role = value);
+    DBOperator.queryCount().then((value) => {count = value});
     _scrollController.addListener(() {
       if (_scrollController.position.maxScrollExtent ==
           _scrollController.position.pixels) {
@@ -51,12 +62,24 @@ class _QuestionListState extends State<QuestionList> {
 //        getListData();
       }
     });
+    RTMMessage.registerQuestionList((Relay r) {
+      dataList.forEach((element) {
+        if (element.title == r.title) {
+          element.ct++;
+          this.setState(() {
+            _sortDataList();
+          });
+          return;
+        }
+      });
+    });
     super.initState();
   }
 
   @override
   void dispose() {
     super.dispose();
+    RTMMessage.unRegisterQuestionList();
     print('dispose');
   }
 
@@ -64,12 +87,11 @@ class _QuestionListState extends State<QuestionList> {
     ListTile tile = ListTile(
         title: Text(q.title),
         leading: CircleAvatar(
-          backgroundColor:
-              q.newMessage == 0 ? Colors.indigoAccent : Colors.grey,
-          child: Text(q.newMessage.toString()),
+          backgroundColor: q.ct == 0 ? Colors.grey : Colors.red,
+          child: Text(q.ct.toString()),
           foregroundColor: Colors.white,
         ),
-        trailing: q.newMessage > 0 ? Icon(Icons.announcement_rounded) : null,
+        trailing: q.ct > 0 ? Icon(Icons.announcement_rounded) : null,
         subtitle: Text(q.createTime ?? ''),
         onTap: () {
           _showDetail(q);
@@ -80,6 +102,8 @@ class _QuestionListState extends State<QuestionList> {
   _showDetail(Question qs) {
     pushRoute(new QuestionDetail(qs), callback: () {
       setState(() {
+        dataList.clear();
+        _queryQuestions();
         print('refresh state');
       });
     });
@@ -98,21 +122,28 @@ class _QuestionListState extends State<QuestionList> {
       Shared.instance.getString("role").then((value) => {
             if (value == "1")
               {
-                HttpClient.send(url_query_question, {'cursor': dataList.length.toString()}, (d) {
+                HttpClient.send(
+                    url_query_question, {'cursor': dataList.length.toString()},
+                    (d) {
                   _loading = false;
                   if (d["code"] == 0) {
                     var list = d["list"];
                     for (var data in list) {
                       var question = data["map"];
-                      var q = Question(question["id"], question["title"],
-                          question["create_time"].toString().replaceAll("T", " "), 0);
+                      var q = Question(
+                          question["id"],
+                          question["title"],
+                          question["create_time"]
+                              .toString()
+                              .replaceAll("T", " "),
+                          0);
                       q.content = question["content"];
                       q.image = question["image"];
                       q.user = question["user"];
                       dataList.add(q);
                     }
                     this.setState(() {
-                      dataList = dataList;
+                      _sortDataList();
                     });
                   }
                 }, (e) {
@@ -127,10 +158,12 @@ class _QuestionListState extends State<QuestionList> {
                         {
                           this.setState(() {
                             dataList.addAll(value);
+                            _sortDataList();
                           })
                         }
                       else
-                        {dataList.addAll(value)},
+                        {dataList.addAll(value),
+                        _sortDataList()},
                       _loading = false
                     })
               }
@@ -140,14 +173,18 @@ class _QuestionListState extends State<QuestionList> {
 
   @override
   Widget build(BuildContext context) {
+    var actions = role == "1"
+        ? []
+        : [
+            IconButton(
+              icon: Icon(Icons.add),
+              color: Colors.blueAccent,
+              onPressed: _toAskQuestion,
+            )
+          ];
+
     return Scaffold(
-        appBar: new HeaderBar(title: '问题列表', rightDMActions: [
-          IconButton(
-            icon: Icon(Icons.add),
-            color: Colors.blueAccent,
-            onPressed: _toAskQuestion,
-          )
-        ]),
+        appBar: new HeaderBar(title: '问题列表', rightDMActions: actions),
         body: new ListView.builder(
           padding: const EdgeInsets.all(10.0),
           itemCount: dataList.length,
