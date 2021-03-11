@@ -85,6 +85,7 @@ class _MyRelayQuestionListState extends State<MyRelayQuestionList> {
   _showDetail(Question qs) {
     pushRoute(new QuestionDetail(qs), callback: () {
       setState(() {
+        _queryQuestions();
         print('refresh state');
       });
     });
