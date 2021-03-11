@@ -54,7 +54,7 @@ class DBOperator {
   static Future<List<Question>> listMyRelayQuestion(int offset) async {
     var database = await init();
     List<Map> list = await database.rawQuery(
-        "select id,user, title, content, create_time, new_message from MyRelayQuestion where id in (select id "
+        "select id,user, title, content, create_time, new_message, (select count(*) from Relay where (is_read = 0 or is_read = null) and question_id = q.id) as ct  from MyRelayQuestion where id in (select id "
                 "from MyRelayQuestion order by create_time desc ,new_message desc limit 8 offset " +
             offset.toString() +
             ")");
@@ -64,6 +64,7 @@ class DBOperator {
           v["new_message"] == null ? 0 : v["new_message"]);
       q.user = v["user"];
       q.content = v["content"];
+      q.ct = v["ct"];
       result.add(q);
     }
     return result;
