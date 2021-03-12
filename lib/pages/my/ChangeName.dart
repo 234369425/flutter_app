@@ -21,6 +21,7 @@ class ChangeName extends StatefulWidget {
 
 class _ChangeNameState extends State<ChangeName> {
   TextEditingController controller = TextEditingController();
+  final FocusNode focusNode = FocusNode();
 
   _saveName() {
     if (controller.text == null || controller.text == "") {
@@ -45,6 +46,7 @@ class _ChangeNameState extends State<ChangeName> {
   @override
   void initState() {
     super.initState();
+    focusNode.requestFocus();
   }
 
   @override
@@ -60,6 +62,7 @@ class _ChangeNameState extends State<ChangeName> {
           children: [
             TextField(
               controller: controller,
+              focusNode: focusNode,
             )
           ],
         ));

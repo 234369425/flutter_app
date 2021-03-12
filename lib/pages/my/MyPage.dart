@@ -12,6 +12,7 @@ import 'package:flutter_app/constants/urls.dart';
 import 'package:flutter_app/pages/login.dart';
 import 'package:flutter_app/pages/my/ChangeGrade.dart';
 import 'package:flutter_app/pages/my/ChangeName.dart';
+import 'package:flutter_app/pages/my/ExportData.dart';
 import 'package:flutter_app/provider/global_model.dart';
 import 'package:flutter_app/utils/Image.dart';
 import 'package:flutter_app/utils/http_client.dart';
@@ -34,6 +35,22 @@ class _MyPageState extends State<MyPage> {
   var name;
   var head;
   var grade;
+  String ipAddress = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadIp();
+  }
+
+  _loadIp() async {
+    for (var interface in await NetworkInterface.list()) {
+      for (var addr in interface.addresses) {
+        ipAddress = addr.address;
+      }
+    }
+    print(ipAddress);
+  }
 
   _openGallery({type = ImageSource.gallery}) async {
     var image;
@@ -104,8 +121,15 @@ class _MyPageState extends State<MyPage> {
         isLine: true,
         isRight: true,
         rValue: name,
-        onPressed: () =>
-            pushRoute(new ChangeName(name), callback: {_loadInfo()}),
+        onPressed: () => pushRoute(new ChangeName(name), callback: () {
+          _loadInfo();
+        }),
+      ),
+      new LabelRow(
+        label: '数据导出',
+        isLine: true,
+        isRight: true,
+        onPressed: () => pushRoute(new ExportData(ipAddress,head)),
       ),
       /*
       new LabelRow(

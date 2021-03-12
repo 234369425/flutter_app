@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_app/bean/Question.dart';
 import 'package:flutter_app/bean/Relay.dart';
 import 'package:flutter_app/utils/shared_util.dart';
@@ -49,6 +51,21 @@ class DBOperator {
       }
     });
     return database;
+  }
+
+  static Future<String> export() async{
+    var database = await init();
+    List<Map> list = await database.rawQuery("select * from Question");
+    List<Map> myRelay = await database.rawQuery("select * from MyRelayQuestion");
+    List<Map> relay = await database.rawQuery("select * from Relay");
+    List<Map> user = await database.rawQuery("select * from User");
+
+    var result = <List<Map>>[];
+    result.add(list);
+    result.add(myRelay);
+    result.add(relay);
+    result.add(user);
+    return jsonEncode(result);
   }
 
   static Future<List<Question>> listMyRelayQuestion(int offset) async {

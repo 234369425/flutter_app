@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/bean/Question.dart';
 import 'package:flutter_app/bean/Relay.dart';
@@ -15,6 +16,7 @@ import 'package:flutter_app/utils/shared_util.dart';
 import 'package:flutter_app/utils/system.dart';
 import 'package:flutter_app/utils/toast.dart';
 import 'package:flutter_app/utils/user_header.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:keyboard_visibility/keyboard_visibility.dart';
 
@@ -42,8 +44,28 @@ class _QuestionDetailState extends State<QuestionDetail> {
   var relayTo = '';
   FocusNode focusNode = FocusNode();
   final ImagePicker picker = ImagePicker();
+  bool hasNetwork = true;
+  var subscription;
+
+
 
   _QuestionDetailState(int id) {
+
+
+    subscription = Connectivity()
+        .onConnectivityChanged
+        .listen((ConnectivityResult result) {
+      // Got a new connectivity status!
+      this.setState(() {
+        if (result == ConnectivityResult.none) {
+          FtToast.danger("失去网络连接！");
+          hasNetwork = false;
+        } else {
+          hasNetwork = true;
+        }
+      });
+    });
+
     Shared.instance.getString("role").then((value) => {
           if (value != "1")
             {
@@ -104,6 +126,10 @@ class _QuestionDetailState extends State<QuestionDetail> {
   }
 
   _openGallery({type: ImageSource.gallery}) async {
+    if(!hasNetwork){
+      FtToast.danger('失去网络连接，请稍后尝试');
+      return;
+    }
     var image;
     try {
       image = await picker.getImage(source: type);
@@ -122,6 +148,10 @@ class _QuestionDetailState extends State<QuestionDetail> {
   }
 
   _sendRtmMessage(Relay relay) {
+    if(!hasNetwork){
+      FtToast.danger('失去网络连接，请稍后尝试');
+      return;
+    }
     relay.questionId = _question.id;
     relay.title = this.widget.q.title;
     relay.time = DateTime.now().toString();
@@ -311,6 +341,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
   void dispose() {
     super.dispose();
     RTMMessage.unRegister();
+    subscription.cancel();
   }
 
   _addPressed() {}
@@ -318,7 +349,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: new HeaderBar(title: _question.title),
+        appBar: new HeaderBar(title: hasNetwork?_question.title: _question.title + ' 等待网络恢复',mainColor: hasNetwork?Colors.black54:Colors.red,),
         resizeToAvoidBottomInset: false,
         body: GestureDetector(
             behavior: HitTestBehavior.translucent,

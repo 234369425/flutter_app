@@ -1,3 +1,4 @@
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/component/ui/header_bar.dart';
 import 'package:flutter_app/constants.dart';
@@ -21,8 +22,17 @@ class LoginFrame extends StatefulWidget {
 }
 
 class Frame extends State<LoginFrame> {
+  var subscription;
+  bool hasNetwork = true;
+
   void check(c) {
     pref.then((value) => value.setString(LoginConstants.userName, c));
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    subscription.cancel();
   }
 
   @override
@@ -30,6 +40,19 @@ class Frame extends State<LoginFrame> {
     super.initState();
     pref.then(
         (value) => {userName.text = value.getString(LoginConstants.userName)});
+    subscription = Connectivity()
+        .onConnectivityChanged
+        .listen((ConnectivityResult result) {
+      // Got a new connectivity status!
+      this.setState(() {
+        if (result == ConnectivityResult.none) {
+          FtToast.danger("失去网络连接！");
+          hasNetwork = false;
+        } else {
+          hasNetwork = true;
+        }
+      });
+    });
   }
 
   final TextEditingController userName = TextEditingController();
@@ -57,10 +80,8 @@ class Frame extends State<LoginFrame> {
     this.setState(() {
       this.loading = true;
     });
-    HttpClient.send(url_login, {
-      'name': userName.value.text,
-      'password': password.value.text
-    }, (resp) {
+    HttpClient.send(url_login,
+        {'name': userName.value.text, 'password': password.value.text}, (resp) {
       if (resp['code'] == 0) {
         var role = resp['data']['role'];
         var head = resp['data']['head'];
@@ -97,10 +118,11 @@ class Frame extends State<LoginFrame> {
     Provider.of<LoginModel>(context)..setContext(context);
 
     return Scaffold(
-        appBar: new HeaderBar(title: 'Login'),
+        appBar: new HeaderBar(title: hasNetwork?'Login':'Login x 等待网络恢复',mainColor: hasNetwork?Colors.black54:Colors.red,),
         body: Center(
           child: Column(
             children: [
+
               TextField(
                 keyboardType: TextInputType.text,
                 controller: userName,
@@ -126,20 +148,26 @@ class Frame extends State<LoginFrame> {
                       flex: 4,
                       child: !loading
                           ? RaisedButton(
-                              onPressed: _submit,
+                              onPressed: hasNetwork?_submit:null,
                               child: Text('登陆'),
                             )
-                          : RaisedButton(child: Text('登录中...'),onPressed: null,)),
+                          : RaisedButton(
+                              child: Text('登录中'),
+                              onPressed: null,
+                            )),
                   SystemUtil.emptyExpanded(2),
                   Expanded(
                       flex: 4,
                       child: !loading
                           ? RaisedButton(
-                              onPressed: _register, child: Text('注册'))
-                          : RaisedButton(child: Text('注册'),onPressed: null,)),
+                              onPressed: hasNetwork?_register:null, child: Text('注册'))
+                          : RaisedButton(
+                              child: Text('注册'),
+                              onPressed: null,
+                            )),
                   SystemUtil.emptyExpanded(4),
                 ],
-              )
+              ),
             ],
           ),
         ));

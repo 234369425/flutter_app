@@ -26,7 +26,7 @@ class _QuestionListState extends State<QuestionList> {
   var dataList = [];
   var count = 0;
   var _loading = false;
-  var role = "0";
+  var role = "1";
 
   void _toAskQuestion() {
     pushRoute(QuestionWidget(topButton: true), callback: () {

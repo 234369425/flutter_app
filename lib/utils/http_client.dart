@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter_app/utils/toast.dart';
 import 'package:http/http.dart' as http;
 
 class HttpClient {
@@ -12,7 +13,11 @@ class HttpClient {
       if (e == null) {
         fail("");
       } else {
-        fail(e.toString());
+        if(e.toString().contains('SocketException')){
+          FtToast.danger('失去网络，请网络恢复后重试！');
+        }else {
+          fail(e.toString());
+        }
       }
     }
   }
