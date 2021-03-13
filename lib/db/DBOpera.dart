@@ -11,71 +11,118 @@ class DBOperator {
     String path = databasesPath + 'chart.db';
     var database = openDatabase(path, version: 1,
         onCreate: (Database db, int version) async {
-      if (version == 1) {
-        db.execute('create table Question('
-            'id INTEGER PRIMARY KEY autoincrement, '
-            'type INTEGER default 0,'
-            'user TEXT,'
-            'title TEXT,'
-            'image TEXT,'
-            'content TEXT,'
-            'create_time TIMESTAMP default (datetime(\'now\', \'localtime\')),'
-            'new_message INTEGER default 0)');
+          if (version == 1) {
+            db.execute('create table Question('
+                'id INTEGER PRIMARY KEY autoincrement, '
+                'type INTEGER default 0,'
+                'user TEXT,'
+                'title TEXT,'
+                'image TEXT,'
+                'content TEXT,'
+                'create_time TIMESTAMP default (datetime(\'now\', \'localtime\')),'
+                'new_message INTEGER default 0)');
 
-        db.execute('create table MyRelayQuestion('
-            'id INTEGER PRIMARY KEY , '
-            'type INTEGER default 0,'
-            'user TEXT,'
-            'head TEXT,'
-            'title TEXT,'
-            'image TEXT,'
-            'content TEXT,'
-            'create_time TEXT,'
-            'new_message INTEGER default 0)');
+            db.execute('create table MyRelayQuestion('
+                'id INTEGER PRIMARY KEY , '
+                'type INTEGER default 0,'
+                'user TEXT,'
+                'head TEXT,'
+                'title TEXT,'
+                'image TEXT,'
+                'content TEXT,'
+                'create_time TEXT,'
+                'new_message INTEGER default 0)');
 
-        db.execute('create table Relay('
-            'id INTEGER PRIMARY KEY autoincrement,'
-            'question_id INTEGER,'
-            'user TEXT,'
-            'image TEXT,'
-            'content TEXT,'
-            'receive_time TIMESTAMP default (datetime(\'now\', \'localtime\')),'
-            'is_read INTEGER default 0'
-            ')');
+            db.execute('create table Relay('
+                'id INTEGER PRIMARY KEY autoincrement,'
+                'question_id INTEGER,'
+                'user TEXT,'
+                'image TEXT,'
+                'content TEXT,'
+                'receive_time TIMESTAMP default (datetime(\'now\', \'localtime\')),'
+                'is_read INTEGER default 0'
+                ')');
 
-        db.execute('create table user('
-            'id INTEGER PRIMARY KEY autoincrement,'
-            'nick_name TEXT,'
-            'head_image TEXT'
-            ')');
-      }
-    });
+            db.execute('create table user('
+                'id INTEGER PRIMARY KEY autoincrement,'
+                'nick_name TEXT,'
+                'head_image TEXT'
+                ')');
+          }
+        });
     return database;
   }
 
-  static Future<String> export() async{
+  static Future<String> export() async {
     var database = await init();
     List<Map> list = await database.rawQuery("select * from Question");
-    List<Map> myRelay = await database.rawQuery("select * from MyRelayQuestion");
+    List<Map> myRelay =
+    await database.rawQuery("select * from MyRelayQuestion");
     List<Map> relay = await database.rawQuery("select * from Relay");
-    List<Map> user = await database.rawQuery("select * from User");
 
     var result = <List<Map>>[];
     result.add(list);
     result.add(myRelay);
     result.add(relay);
-    result.add(user);
     return jsonEncode(result);
+  }
+
+  static import(List<dynamic> list, dynamic finish) async {
+    var database = await init();
+    var batch = database.batch();
+    batch.rawQuery("delete from Question");
+    batch.rawQuery("delete from MyRelayQuestion");
+    batch.rawQuery("delete from Relay");
+    list[0].map((e) =>
+    [
+      e["id"],
+      e["type"],
+      e["user"],
+      e["title"],
+      e["image"],
+      e["content"],
+      e["create_time"],
+      e["new_message"]
+    ]).toList().forEach((element) {
+      batch.rawInsert("insert into Question(id,type,user,title,image,content,create_time,new_message) values(?,?,?,?,?,?,?,?)", element);
+    });
+    list[1].map((e) =>
+    [
+      e["id"],
+      e["type"],
+      e["user"],
+      e["title"],
+      e["image"],
+      e["content"],
+      e["create_time"],
+      e["new_message"]
+    ]).toList().forEach((element) {
+      batch.rawInsert("insert into MyRelayQuestion(id,type,user,title,image,content,create_time,new_message) values(?,?,?,?,?,?,?,?)", element);
+    });
+    list[2].map((e) =>
+    [
+      e["id"],
+      e["question_id"],
+      e["user"],
+      e["image"],
+      e["content"],
+      e["receive_time"],
+      e["is_read"]
+    ]).toList().forEach((element) {
+      batch.rawInsert("insert into Relay(id,question_id,user,image,content,receive_time,is_read) values(?,?,?,?,?,?,?)", element);
+    });
+    batch.commit();
+    finish();
   }
 
   static Future<List<Question>> listMyRelayQuestion(int offset) async {
     var database = await init();
-    List<Map> list = await database.rawQuery(
-        "select id,user, title, content, create_time, new_message, "
-            "(select count(*) from Relay where (is_read = 0 or is_read = null) and question_id = q.id) as ct  from MyRelayQuestion q where id in (select id "
-                "from MyRelayQuestion  order by create_time desc ,new_message desc limit 8 offset " +
-            offset.toString() +
-            ")");
+    List<Map> list = await database
+        .rawQuery("select id,user, title, content, create_time, new_message, "
+        "(select count(*) from Relay where (is_read = 0 or is_read = null) and question_id = q.id) as ct  from MyRelayQuestion q where id in (select id "
+        "from MyRelayQuestion  order by create_time desc ,new_message desc limit 8 offset " +
+        offset.toString() +
+        ")");
     var result = <Question>[];
     for (var v in list) {
       var q = new Question(v["id"], v["title"], v["create_time"],
@@ -91,7 +138,7 @@ class DBOperator {
   static Future<int> queryMyRelayCount() async {
     var database = await init();
     var list =
-        await database.rawQuery("select count(*) as ct from MyRelayQuestion");
+    await database.rawQuery("select count(*) as ct from MyRelayQuestion");
     for (var v in list) {
       return v["ct"];
     }
@@ -99,13 +146,13 @@ class DBOperator {
 
   static Future<List<Question>> listQuestion(int offset) async {
     var database = await init();
-    List<Map> list = await database.rawQuery(
-        "select id, title, create_time, new_message, "
-            "(select count(*) from Relay where (is_read = 0 or is_read = null) and question_id = q.id) as ct "
-            " from Question q where id in (select id "
-                "from Question order by create_time desc ,new_message desc limit 8 offset " +
-            offset.toString() +
-            ")");
+    List<Map> list =
+    await database.rawQuery("select id, title, create_time, new_message, "
+        "(select count(*) from Relay where (is_read = 0 or is_read = null) and question_id = q.id) as ct "
+        " from Question q where id in (select id "
+        "from Question order by create_time desc ,new_message desc limit 8 offset " +
+        offset.toString() +
+        ")");
     var result = <Question>[];
     for (var v in list) {
       var q = new Question(v["id"], v["title"], v["create_time"],
@@ -133,7 +180,7 @@ class DBOperator {
           "select id from MyRelayQuestion where title = ? and user = ?",
           [relay.title, relay.user]);
     }
-    if(qid.isEmpty){
+    if (qid.isEmpty) {
       return;
     }
     var id = qid.first["id"];
@@ -142,7 +189,7 @@ class DBOperator {
     params.add(relay.user);
     params.add(relay.image);
     params.add(relay.content);
-    params.add(relay.user == null ? "1":"0");
+    params.add(relay.user == null ? "1" : "0");
     await database.rawInsert(
         "insert into Relay(question_id,user,image,content,receive_time,is_read) values (?,?,?,?,datetime(\'now\', \'localtime\'),?)",
         params);
@@ -184,7 +231,8 @@ class DBOperator {
     params.add(id);
     List<Map> relays = await database.rawQuery(
         "select * from Relay where question_id = ?", params);
-    await database.rawQuery("update Relay set is_read = '1'  where question_id = ?", params);
+    await database.rawQuery(
+        "update Relay set is_read = '1'  where question_id = ?", params);
     List<Relay> result = List<Relay>();
     for (var relay in relays) {
       Relay r = Relay();

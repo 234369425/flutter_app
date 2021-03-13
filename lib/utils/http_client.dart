@@ -21,5 +21,23 @@ class HttpClient {
       }
     }
   }
+
+  static get(url,success,fail) async{
+    try {
+      var response = await http.get(url);
+      var data = jsonDecode(Utf8Decoder().convert(response.bodyBytes));
+      success(data);
+    } catch (e) {
+      if (e == null) {
+        fail("-3");
+      } else {
+        if(e.toString().contains('SocketException')){
+          fail("-1");
+        }else {
+          fail(e.toString());
+        }
+      }
+    }
+  }
 }
 

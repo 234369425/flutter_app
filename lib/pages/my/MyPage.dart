@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/component/dialog/show_toast.dart';
@@ -13,6 +14,7 @@ import 'package:flutter_app/pages/login.dart';
 import 'package:flutter_app/pages/my/ChangeGrade.dart';
 import 'package:flutter_app/pages/my/ChangeName.dart';
 import 'package:flutter_app/pages/my/ExportData.dart';
+import 'package:flutter_app/pages/my/ImportData.dart';
 import 'package:flutter_app/provider/global_model.dart';
 import 'package:flutter_app/utils/Image.dart';
 import 'package:flutter_app/utils/http_client.dart';
@@ -23,6 +25,7 @@ import 'package:flutter_app/utils/toast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+import 'package:qrscan/qrscan.dart' as scanner;
 
 class MyPage extends StatefulWidget {
   @override
@@ -35,7 +38,9 @@ class _MyPageState extends State<MyPage> {
   var name;
   var head;
   var grade;
+  var account = '';
   String ipAddress = '';
+
 
   @override
   void initState() {
@@ -44,6 +49,7 @@ class _MyPageState extends State<MyPage> {
   }
 
   _loadIp() async {
+
     for (var interface in await NetworkInterface.list()) {
       for (var addr in interface.addresses) {
         ipAddress = addr.address;
@@ -96,6 +102,15 @@ class _MyPageState extends State<MyPage> {
               })
             }
         });
+
+    await shared.getAccount().then((value) => {
+          if (this.mounted)
+            {
+              this.setState(() {
+                account = value;
+              })
+            }
+        });
   }
 
   Widget _body() {
@@ -129,7 +144,13 @@ class _MyPageState extends State<MyPage> {
         label: '数据导出',
         isLine: true,
         isRight: true,
-        onPressed: () => pushRoute(new ExportData(ipAddress,head)),
+        onPressed: () => pushRoute(new ExportData(account, ipAddress)),
+      ),
+      new LabelRow(
+        label: '数据导入',
+        onPressed: () {
+          pushRoute(new ImportData(account));
+        },
       ),
       /*
       new LabelRow(
