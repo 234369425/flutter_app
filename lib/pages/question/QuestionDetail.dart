@@ -99,6 +99,13 @@ class _QuestionDetailState extends State<QuestionDetail> {
             {
               canRelay = true,
               _question = this.widget.q,
+              HttpClient.send(url_question_load_image, {id: _question.id}, (e) {
+                this.setState(() {
+                  if (this.mounted) {
+                    _question.image = e.data["image"];
+                  }
+                });
+              }, (m) {}),
               relayTo = this.widget.q.user,
               this.relays.add(_question.toRelay()),
               RTMMessage.registerCurrent(relayTo, _question.title, (relay) {
@@ -137,8 +144,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
       return;
     }
 
-    await compressToString(File(image.path),finish: (imageStr){
-
+    await compressToString(File(image.path), finish: (imageStr) {
       var relay = Relay();
       relay.image = imageStr;
       _sendRtmMessage(relay);

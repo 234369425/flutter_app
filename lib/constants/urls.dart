@@ -6,3 +6,4 @@ const url_post_question = _url_host + "/create/question";
 const url_query_question = _url_host + "/query/question";
 const url_query_user_header = _url_host + "/query/user";
 const url_update_question_relay = _url_host + "/update/relay";
+const url_question_load_image = _url_host + "/image/question";
