@@ -35,6 +35,9 @@ class _ImportDataState extends State<ImportData> {
 
     if (result.isGranted) {
       print('拥有相机权限');
+      this.setState(() {
+        this.text = '等待扫码';
+      });
       String text = await scanner.scan();
       if (!text.startsWith("flutter_app")) {
         FtToast.danger('不支持的二维码');
@@ -84,6 +87,11 @@ class _ImportDataState extends State<ImportData> {
     return Scaffold(
         backgroundColor: appBarColor,
         appBar: new HeaderBar(title: '导入数据'),
-        body: Center(child: Text(text)));
+        body: Center(child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children:[
+          Text(text),
+          text == '等待扫码'? TextButton(onPressed: _init, child: Text('打开相机')) : Container()
+        ])));
   }
 }

@@ -47,11 +47,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
   bool hasNetwork = true;
   var subscription;
 
-
-
   _QuestionDetailState(int id) {
-
-
     subscription = Connectivity()
         .onConnectivityChanged
         .listen((ConnectivityResult result) {
@@ -126,7 +122,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
   }
 
   _openGallery({type: ImageSource.gallery}) async {
-    if(!hasNetwork){
+    if (!hasNetwork) {
       FtToast.danger('失去网络连接，请稍后尝试');
       return;
     }
@@ -140,15 +136,17 @@ class _QuestionDetailState extends State<QuestionDetail> {
     if (image == null) {
       return;
     }
-    String imageStr = await compressToString(File(image.path));
 
-    var relay = Relay();
-    relay.image = imageStr;
-    _sendRtmMessage(relay);
+    await compressToString(File(image.path),finish: (imageStr){
+
+      var relay = Relay();
+      relay.image = imageStr;
+      _sendRtmMessage(relay);
+    });
   }
 
   _sendRtmMessage(Relay relay) {
-    if(!hasNetwork){
+    if (!hasNetwork) {
       FtToast.danger('失去网络连接，请稍后尝试');
       return;
     }
@@ -187,9 +185,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
     if (relays.length == 1) {
       Shared.instance.getAccount().then((value) => {
             HttpClient.send(url_update_question_relay,
-                {'user': value, 'qid': _question.id.toString()}, (d) {
-
-                }, (d) {
+                {'user': value, 'qid': _question.id.toString()}, (d) {}, (d) {
               FtToast.danger(d);
             })
           });
@@ -226,22 +222,34 @@ class _QuestionDetailState extends State<QuestionDetail> {
         ),
       );
     }
-    res.add(Container(
-        width: width,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(5),
-          gradient: q.user == null
-              ? LinearGradient(colors: [Colors.lightGreen, Colors.lightGreen])
-              : LinearGradient(colors: [Colors.black12, Colors.black12]),
-        ),
-        child: Padding(
-            padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
-            child: current.content != null
-                ? Text(
-                    current.content,
-                    softWrap: true,
-                  )
-                : ImageUtils.dynamicAvatar(current.image))));
+
+    if (current.content != null) {
+      res.add(Container(
+          width: width,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5),
+            gradient: q.user == null
+                ? LinearGradient(colors: [Colors.lightGreen, Colors.lightGreen])
+                : LinearGradient(colors: [Colors.black12, Colors.black12]),
+          ),
+          child: Padding(
+              padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
+              child: SelectableText(current.content))));
+    }
+
+    if (current.image != null) {
+      res.add(Container(
+          width: width,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5),
+            gradient: q.user == null
+                ? LinearGradient(colors: [Colors.lightGreen, Colors.lightGreen])
+                : LinearGradient(colors: [Colors.black12, Colors.black12]),
+          ),
+          child: Padding(
+              padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
+              child: ImageUtils.dynamicAvatar(current.image))));
+    }
     return res;
   }
 
@@ -349,7 +357,10 @@ class _QuestionDetailState extends State<QuestionDetail> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: new HeaderBar(title: hasNetwork?_question.title: _question.title + ' 等待网络恢复',mainColor: hasNetwork?Colors.black54:Colors.red,),
+        appBar: new HeaderBar(
+          title: hasNetwork ? _question.title : _question.title + ' 等待网络恢复',
+          mainColor: hasNetwork ? Colors.black54 : Colors.red,
+        ),
         resizeToAvoidBottomInset: false,
         body: GestureDetector(
             behavior: HitTestBehavior.translucent,

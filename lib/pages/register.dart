@@ -33,10 +33,12 @@ class _RegisterState extends State<Register> {
     if (password.value.text.trim() == "") {
       FtToast.danger("密码不能为空！");
       passwordFocus.requestFocus();
+      return;
     }
     if (displayName.value.text.trim() == "") {
       FtToast.danger("显示名不能为空");
       displayNameFocus.requestFocus();
+      return;
     }
     HttpClient.send(url_register, {
       'name': userName.value.text,

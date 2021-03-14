@@ -1,11 +1,13 @@
 import 'dart:convert';
 import 'dart:io' as IO;
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_app/component/ui/header_bar.dart';
 import 'package:flutter_app/constants.dart';
 import 'package:flutter_app/constants/urls.dart';
 import 'package:flutter_app/db/DBOpera.dart';
+import 'package:flutter_app/utils/Image.dart';
 import 'package:flutter_app/utils/http_client.dart';
 import 'package:flutter_app/utils/route.dart';
 import 'package:flutter_app/utils/shared_util.dart';
@@ -39,28 +41,40 @@ class _QuestionWidgetState extends State<QuestionWidget> {
         });
   }
 
-  void _submitQuestion() {
+  void _submitQuestion() async {
+
+    if(title.text.isEmpty){
+      return;
+    }
+    if(detail.text.isEmpty){
+      return;
+    }
+
     String imageStr;
     if (_imagePath != null) {
-      final bytes = IO.File(_imagePath).readAsBytesSync();
-      imageStr = base64.encode(bytes);
-      String suffix = _imagePath == null
-          ? ''
-          : _imagePath.substring(_imagePath.lastIndexOf('.') + 1);
-      imageStr = 'data:image/' + suffix + ';base64,' + imageStr;
+      compressToString(File(_imagePath),finish: (imgStr){
+        _send(imgStr);
+      });
+    }else {
+      _send(imageStr);
     }
-    shared.getAccount().then((user) => HttpClient.send(url_post_question, {
+  }
+
+  _send(String imageStr){
+    shared.getAccount().then((user) =>
+        HttpClient.send(url_post_question, {
           'user': user,
           'title': title.text,
           'content': detail.text,
           'image': imageStr
         }, (res) {
           DBOperator.insertQuestion(title.text, imageStr, detail.text);
-          shared.getPrefs().then((value) => {
-                value.remove(QuestionConstants.image),
-                value.remove(QuestionConstants.detail),
-                value.remove(QuestionConstants.title)
-              });
+          shared.getPrefs().then((value) =>
+          {
+            value.remove(QuestionConstants.image),
+            value.remove(QuestionConstants.detail),
+            value.remove(QuestionConstants.title)
+          });
           if (this.widget.topButton) {
             popRoute();
           } else {

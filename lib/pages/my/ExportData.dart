@@ -91,7 +91,8 @@ class _ExportDataState extends State<ExportData> {
         backgroundColor: appBarColor,
         appBar: new HeaderBar(title: '导出数据'),
         body: Center(
-            child: Column(children: [
+            child:
+                Column(mainAxisAlignment: MainAxisAlignment.center, children: [
           Center(
             child: QrImage(
               data: 'flutter_app' + this.widget.name + '@' + this.widget.ip,
@@ -103,9 +104,12 @@ class _ExportDataState extends State<ExportData> {
               ),
             ),
           ),
-          Text('保持两手机在同一个wifi下'),
+          Text('请保持两手机在同一个wifi下'),
           Text('登录同一帐号扫一扫导入'),
-          Text(_state,style: TextStyle(color: Colors.red),),
+          Text(
+            _state,
+            style: TextStyle(color: Colors.red),
+          ),
         ])));
   }
 }
