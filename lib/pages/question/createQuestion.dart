@@ -28,6 +28,10 @@ class QuestionWidget extends StatefulWidget {
 class _QuestionWidgetState extends State<QuestionWidget> {
   final TextEditingController title = TextEditingController();
   final TextEditingController detail = TextEditingController();
+  final FocusNode titleFocus = FocusNode();
+  final FocusNode detailFocus = FocusNode();
+  var submit = false;
+
   final Shared shared = Shared.instance;
   final ImagePicker picker = ImagePicker();
   var _imagePath;
@@ -42,47 +46,54 @@ class _QuestionWidgetState extends State<QuestionWidget> {
   }
 
   void _submitQuestion() async {
-
-    if(title.text.isEmpty){
+    if (title.text.isEmpty) {
+      titleFocus.requestFocus();
       return;
     }
-    if(detail.text.isEmpty){
+    if (detail.text.isEmpty) {
+      detailFocus.requestFocus();
       return;
     }
+    this.setState(() {
+      submit = true;
+    });
 
     String imageStr;
     if (_imagePath != null) {
-      compressToString(File(_imagePath),finish: (imgStr){
+      compressToString(File(_imagePath), scale: 0.4, finish: (imgStr) {
         _send(imgStr);
       });
-    }else {
+    } else {
       _send(imageStr);
     }
   }
 
-  _send(String imageStr){
-    shared.getAccount().then((user) =>
-        HttpClient.send(url_post_question, {
+  _send(String imageStr) {
+    shared.getAccount().then((user) => HttpClient.send(url_post_question, {
           'user': user,
           'title': title.text,
           'content': detail.text,
           'image': imageStr
         }, (res) {
           DBOperator.insertQuestion(title.text, imageStr, detail.text);
-          shared.getPrefs().then((value) =>
-          {
-            value.remove(QuestionConstants.image),
-            value.remove(QuestionConstants.detail),
-            value.remove(QuestionConstants.title)
-          });
+          shared.getPrefs().then((value) => {
+                value.remove(QuestionConstants.image),
+                value.remove(QuestionConstants.detail),
+                value.remove(QuestionConstants.title)
+              });
           if (this.widget.topButton) {
             popRoute();
           } else {
             title.clear();
             detail.clear();
+            submit = false;
             FtToast.warning("问题已提交");
           }
-        }, (cause) {}));
+        }, (cause) {
+          this.setState(() {
+            submit = false;
+          });
+        }));
   }
 
   _showImagePicker(ImageSource source) async {
@@ -126,6 +137,7 @@ class _QuestionWidgetState extends State<QuestionWidget> {
               children: [
                 TextField(
                   controller: title,
+                  focusNode: titleFocus,
                   onChanged: _titleChanged,
                   decoration: InputDecoration(
                     labelText: '问题简述',
@@ -158,11 +170,14 @@ class _QuestionWidgetState extends State<QuestionWidget> {
                 TextField(
                   maxLines: 8,
                   controller: detail,
+                  focusNode: detailFocus,
                   onChanged: _detailChanged,
                   decoration: InputDecoration(
                       labelText: '详细描述', icon: Icon(Icons.text_snippet)),
                 ),
-                RaisedButton(onPressed: _submitQuestion, child: Text(' 提 交 '))
+                RaisedButton(
+                    onPressed: submit ? null : _submitQuestion,
+                    child: Text(' 提 交 '))
               ],
             ),
             context));
