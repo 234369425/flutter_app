@@ -137,8 +137,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
       return;
     }
 
-    await compressToString(File(image.path),finish: (imageStr){
-
+    await compressToString(File(image.path), finish: (imageStr) {
       var relay = Relay();
       relay.image = imageStr;
       _sendRtmMessage(relay);
@@ -328,6 +327,16 @@ class _QuestionDetailState extends State<QuestionDetail> {
           _loading = true;
         }
 //        getListData();
+      }
+    });
+    Shared.instance.getString("role").then((value) {
+      if (value == "1") {
+        HttpClient.send(url_query_question_image, {"id": _question.id.toString()},
+            (success) {
+          this.setState(() {
+            this.relays[0].image = success["data"]["image"];
+          });
+        }, () {});
       }
     });
     KeyboardVisibilityNotification().addNewListener(
