@@ -171,7 +171,7 @@ class DBOperator {
     }
   }
 
-  static void insertRelay(Relay relay) async {
+  static void insertRelay(Relay relay, {int newMessage = 0}) async {
     var database = await init();
     var qid = await database
         .rawQuery("select id from Question where title = ?", [relay.title]);
@@ -189,7 +189,7 @@ class DBOperator {
     params.add(relay.user);
     params.add(relay.image);
     params.add(relay.content);
-    params.add(relay.user == null ? "1" : "0");
+    params.add( newMessage == 0 ? (relay.user == null ? "1" : "0") : "1");
     await database.rawInsert(
         "insert into Relay(question_id,user,image,content,receive_time,is_read) values (?,?,?,?,datetime(\'now\', \'localtime\'),?)",
         params);

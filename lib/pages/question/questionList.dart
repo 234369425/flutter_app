@@ -187,7 +187,7 @@ class _QuestionListState extends State<QuestionList> {
 
     return Scaffold(
         appBar: new HeaderBar(title: '问题列表', rightDMActions: actions),
-        body: new ListView.builder(
+        body: dataList.isEmpty? new Center(child: Text('暂无问题'),) : new ListView.builder(
           padding: const EdgeInsets.all(10.0),
           itemCount: dataList.length,
           controller: _scrollController,

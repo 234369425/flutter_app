@@ -11,32 +11,32 @@ class RTMMessage {
   static var _channels = <String, AgoraRtmChannel>{};
   static String user = "";
   static String title = "";
-  static dynamic callback = (dynamic s){};
-  static dynamic listCallback = (dynamic s){};
+  static dynamic callback = (dynamic s) {};
+  static dynamic listCallback = (dynamic s) {};
 
-  static logout() async{
+  static logout() async {
     _client.logout();
     _channels.clear();
   }
 
-  static registerQuestionList(dynamic fn){
+  static registerQuestionList(dynamic fn) {
     listCallback = fn;
   }
 
-  static unRegisterQuestionList(){
-    listCallback = (dynamic s){};
+  static unRegisterQuestionList() {
+    listCallback = (dynamic s) {};
   }
 
-  static registerCurrent(String u,String t, dynamic cb){
+  static registerCurrent(String u, String t, dynamic cb) {
     user = u;
     title = t;
     callback = cb;
   }
 
-  static unRegister(){
+  static unRegister() {
     user = '';
     title = '';
-    callback = (dynamic s){};
+    callback = (dynamic s) {};
   }
 
   static init(String user) async {
@@ -52,11 +52,13 @@ class RTMMessage {
         var mess = jsonDecode(message.text);
         mess['user'] = peerId;
         var relay = Relay.fromJson(mess);
-        if(mess['title'] == title){
+        var isNew = 1;
+        if (mess['title'] == title) {
           callback(relay);
+          isNew = 0;
         }
         listCallback(relay);
-        DBOperator.insertRelay(relay);
+        DBOperator.insertRelay(relay, newMessage: isNew);
       } catch (e) {
         print(e);
       }
@@ -74,7 +76,6 @@ class RTMMessage {
   }
 
   static Future<AgoraRtmChannel> createChannel(String peerId) async {
-
     var channel = _channels[peerId];
     if (channel == null) {
       channel = await _client.createChannel(peerId);

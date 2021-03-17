@@ -99,13 +99,6 @@ class _QuestionDetailState extends State<QuestionDetail> {
             {
               canRelay = true,
               _question = this.widget.q,
-              HttpClient.send(url_question_load_image, {id: _question.id}, (e) {
-                this.setState(() {
-                  if (this.mounted) {
-                    _question.image = e.data["image"];
-                  }
-                });
-              }, (m) {}),
               relayTo = this.widget.q.user,
               this.relays.add(_question.toRelay()),
               RTMMessage.registerCurrent(relayTo, _question.title, (relay) {
@@ -334,6 +327,16 @@ class _QuestionDetailState extends State<QuestionDetail> {
           _loading = true;
         }
 //        getListData();
+      }
+    });
+    Shared.instance.getString("role").then((value) {
+      if (value == "1") {
+        HttpClient.send(url_query_question_image, {"id": _question.id.toString()},
+            (success) {
+          this.setState(() {
+            this.relays[0].image = success["data"]["image"];
+          });
+        }, () {});
       }
     });
     KeyboardVisibilityNotification().addNewListener(
