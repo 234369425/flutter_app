@@ -25,7 +25,6 @@ import 'package:flutter_app/utils/toast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
-import 'package:qrscan/qrscan.dart' as scanner;
 
 class MyPage extends StatefulWidget {
   @override
@@ -61,7 +60,8 @@ class _MyPageState extends State<MyPage> {
   _openGallery({type = ImageSource.gallery}) async {
     var image;
     try {
-      image = await picker.getImage(source: type);
+      image = await ImagePicker.pickImage(source: type);
+      //image = await picker.getImage(source: type);
     } catch (e) {
       FtToast.danger("请授予相机相册访问权限！");
       return;

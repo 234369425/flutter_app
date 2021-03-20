@@ -16,9 +16,7 @@ import 'package:flutter_app/utils/shared_util.dart';
 import 'package:flutter_app/utils/system.dart';
 import 'package:flutter_app/utils/toast.dart';
 import 'package:flutter_app/utils/user_header.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:keyboard_visibility/keyboard_visibility.dart';
 
 class QuestionDetail extends StatefulWidget {
   final Question q;
@@ -128,7 +126,8 @@ class _QuestionDetailState extends State<QuestionDetail> {
     }
     var image;
     try {
-      image = await picker.getImage(source: type);
+      image = await ImagePicker.pickImage(source: type);
+      //image = await picker.getImage(source: type);
     } catch (e) {
       FtToast.danger("请授予相机相册访问权限！");
       return;
@@ -339,18 +338,6 @@ class _QuestionDetailState extends State<QuestionDetail> {
         }, () {});
       }
     });
-    KeyboardVisibilityNotification().addNewListener(
-      onChange: (bool visible) {
-        this.setState(() {
-          if (visible) {
-            Future.delayed(Duration(milliseconds: 100), () {
-              _scrollToBottom(height: 5);
-            });
-          }
-          //keyBoardVisible = visible;
-        });
-      },
-    );
     super.initState();
   }
 

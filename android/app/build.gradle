@@ -25,31 +25,18 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
-def keystoreProperties = new Properties()
-def keystorePropertiesFile = rootProject.file("key.properties")
-if(keystorePropertiesFile.exists()){
-    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
-}
-
-
-
 android {
-    compileSdkVersion 28
-    ndkVersion "21.0.6352462"
+    compileSdkVersion 30
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
-    }
-
-    lintOptions {
-        disable 'InvalidPackage'
     }
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.subject.flutter.flutter_app"
         minSdkVersion 21
-        targetSdkVersion 28
+        targetSdkVersion 30
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
@@ -61,35 +48,12 @@ android {
             signingConfig signingConfigs.debug
         }
     }
-
-    signingConfigs {
-        release {
-            keyAlias keystoreProperties['keyAlias']
-            keyPassword keystoreProperties['keyPassword']
-            storeFile file(keystoreProperties['storeFile'])
-            storePassword keystoreProperties['storePassword']
-        }
-    }
-
-    buildTypes{
-        release {
-            signingConfig signingConfigs.release
-        }
-    }
-
-    /*
-    dependencies {
-        //implementation fileTree(dir: 'libs', include: '*.jar')
-    }
-
-    sourceSets{
-        main{
-            //jniLibs.srcDir 'libs'
-        }
-    }*/
-
 }
 
 flutter {
     source '../..'
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }

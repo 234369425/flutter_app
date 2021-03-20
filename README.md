@@ -1,16 +1,21 @@
-# flutter_app
+# 测试用App
 
-A new Flutter application.
+遇到 
 
-## Getting Started
 
-This project is a starting point for a Flutter application.
+import androidx.lifecycle.DefaultLifecycleObserver;
+                                    ^
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+    implementation 'androidx.lifecycle:lifecycle-common-java8:2.3.0'
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+不能使用 android插件
+dependencies {
+    classpath 'com.android.tools.build:gradle:3.6.4'
+    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+}
+
+Unresolved reference: NonNull
+
+implementation 'androidx.lifecycle:lifecycle-runtime:2.3.0'
+implementation 'androidx.annotation:annotation:1.1.0'
