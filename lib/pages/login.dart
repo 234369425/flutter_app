@@ -93,7 +93,7 @@ class Frame extends State<LoginFrame> {
         shared.saveString("role", role);
         shared.saveString("displayName", resp['data']['displayName']);
         pushAndRemoveRoute(ApplicationLayout(role));
-        RTMMessage.init(userName.text.trim());
+        //RTMMessage.init(userName.text.trim());
       } else {
         FtToast.danger('用户名或密码错误！');
       }
