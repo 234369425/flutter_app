@@ -1,45 +1,22 @@
-package io.agora.agorartm
+package com.subject.flutter.flutter_app.plugins.rtm
 
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import io.agora.rtm.*
+import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
-import io.flutter.plugin.common.PluginRegistry.Registrar
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
+import io.flutter.Log;
 
-class AgoraRtmPlugin: MethodCallHandler {
-  private val registrar: Registrar
-  private val methodChannel: MethodChannel
-  private val eventHandler: Handler
+class AgoraRtmPlugin(var context: Context, private val messenger: BinaryMessenger): MethodCallHandler {
+  private val eventHandler = Handler(Looper.getMainLooper())
   private var nextClientIndex: Long = 0
   private var clients = HashMap<Long, RTMClient>()
-
-  companion object {
-    @JvmStatic
-    fun registerWith(registrar: Registrar) {
-      val channel = MethodChannel(registrar.messenger(), "io.agora.rtm")
-      val plugin = AgoraRtmPlugin(registrar, channel)
-      channel.setMethodCallHandler(plugin)
-    }
-  }
-
-  constructor(registrar: Registrar, channel: MethodChannel) {
-    this.registrar = registrar
-    this.methodChannel = channel
-    this.eventHandler = Handler(Looper.getMainLooper())
-  }
-
-  private fun getActiveContext(): Context {
-    return when {
-      (registrar.activity() == null) -> registrar.context()
-      else -> registrar.activity()
-    }
-  }
 
   private fun runMainThread(f: () -> Unit) {
     eventHandler.post(f)
@@ -60,7 +37,7 @@ class AgoraRtmPlugin: MethodCallHandler {
     }
 
     var params: Map<String, Any> = callArguments["params"] as Map<String, Any>
-
+    Log.i("call",call ?:"")
     when (call) {
       "static" -> {
         handleStaticMethod(methodName, params, result)
@@ -96,7 +73,7 @@ class AgoraRtmPlugin: MethodCallHandler {
           nextClientIndex++
         }
 
-        val rtmClient = RTMClient(getActiveContext(), appId, nextClientIndex, registrar.messenger(), eventHandler)
+        val rtmClient = RTMClient(context, appId, nextClientIndex, messenger, eventHandler)
         result.success(hashMapOf(
                 "errorCode" to 0,
                 "index" to nextClientIndex
@@ -149,7 +126,7 @@ class AgoraRtmPlugin: MethodCallHandler {
         }
       }
       "setLog" -> {
-        val relativePath = "/sdcard/${getActiveContext().packageName}"
+        val relativePath = "/sdcard/${context.packageName}"
         val size: Int = when {
           args?.get("size") is Int -> args.get("size") as Int
           else -> 524288
@@ -811,7 +788,7 @@ class AgoraRtmPlugin: MethodCallHandler {
       }
       "createChannel" -> {
         val channelId = args?.get("channelId") as String
-        val agoraRtmChannel = RTMChannel(clientIndex, channelId, registrar.messenger(), eventHandler)
+        val agoraRtmChannel = RTMChannel(clientIndex, channelId, messenger, eventHandler)
         val channel: RtmChannel? = client.createChannel(channelId, agoraRtmChannel)
         if (null == channel) {
           runMainThread {

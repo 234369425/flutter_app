@@ -93,7 +93,11 @@ class Frame extends State<LoginFrame> {
         shared.saveString("role", role);
         shared.saveString("displayName", resp['data']['displayName']);
         pushAndRemoveRoute(ApplicationLayout(role));
-        RTMMessage.init(userName.text.trim());
+        try {
+          RTMMessage.init(userName.text.trim());
+        }catch(e){
+          print(e.toString());
+        }
       } else {
         FtToast.danger('用户名或密码错误！');
       }
@@ -118,7 +122,7 @@ class Frame extends State<LoginFrame> {
     Provider.of<LoginModel>(context)..setContext(context);
 
     return Scaffold(
-        appBar: new HeaderBar(title: hasNetwork?'Login':'Login x 等待网络恢复',mainColor: hasNetwork?Colors.black54:Colors.red,),
+        appBar: new HeaderBar(title: hasNetwork?'Login':'等待网络恢复',mainColor: hasNetwork?Colors.black54:Colors.red,),
         body: Center(
           child: Column(
             children: [

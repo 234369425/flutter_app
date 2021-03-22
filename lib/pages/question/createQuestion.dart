@@ -157,6 +157,7 @@ class _QuestionWidgetState extends State<QuestionWidget> {
                             {_showImagePicker(ImageSource.gallery)})
                   ],
                 ),
+                /**
                 DropdownButton(
                     isExpanded: true,
                     items: [
@@ -168,6 +169,7 @@ class _QuestionWidgetState extends State<QuestionWidget> {
                       ),
                     ],
                     onChanged: _dropDownChanged),
+                    */
                 TextField(
                   maxLines: 8,
                   controller: detail,

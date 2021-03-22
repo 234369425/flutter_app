@@ -245,12 +245,13 @@ class _QuestionListState extends State<QuestionList> {
                   icon: Icons.more_horiz,
                   onTap: () => _showDetail(q),
                 ),
+                /**
                 IconSlideAction(
                   caption: 'Delete',
                   color: Colors.red,
                   icon: Icons.delete,
                   onTap: () => _doMethod('Delete', q),
-                ),
+                ),*/
               ],
             );
           },

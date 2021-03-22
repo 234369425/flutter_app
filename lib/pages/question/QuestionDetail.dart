@@ -44,8 +44,10 @@ class _QuestionDetailState extends State<QuestionDetail> {
   final ImagePicker picker = ImagePicker();
   bool hasNetwork = true;
   var subscription;
+  var self = "";
 
   _QuestionDetailState(int id) {
+    Shared.instance.getAccount().then((value) => self = value);
     subscription = Connectivity()
         .onConnectivityChanged
         .listen((ConnectivityResult result) {
@@ -221,6 +223,11 @@ class _QuestionDetailState extends State<QuestionDetail> {
       );
     }
 
+    res.add(Container(
+        alignment: q.user == null ? Alignment(1, 0) : Alignment(-1, 0),
+        child: Text(q.user == null ? self : q.user,
+            style: TextStyle(color: Colors.black54),)));
+
     if (current.content != null) {
       res.add(Container(
           width: width,
@@ -235,7 +242,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
               child: SelectableText(current.content))));
     }
 
-    if (current.image != null) {
+    if (current.image != null && current.image != "") {
       res.add(Container(
           width: width,
           decoration: BoxDecoration(
@@ -260,25 +267,38 @@ class _QuestionDetailState extends State<QuestionDetail> {
     if (!self) {
       targetHead = UserHeader.get(r.user) ?? headPortrait;
     }
+
+    var showTime = r.timeString();
+    if (index != 0) {
+      var last = relays[index - 1];
+      showTime = r.showTime(last.time);
+    }
+    var top = 5.0;
+    if (showTime != "") {
+      top = 25.0;
+    }
+
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
             flex: 2,
             child: Padding(
-                padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
-                child: Container(
-                    alignment: Alignment.topCenter,
-                    child: new SizedBox(
-                      width: 40.0,
-                      height: 40.0,
-                      child: new ClipRRect(
-                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                        child: r.user != null
-                            ? ImageUtils.dynamicAvatar(targetHead)
-                            : Text(''),
-                      ),
-                    )))),
+                padding: EdgeInsets.fromLTRB(5, top, 5, 5),
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      new SizedBox(
+                        width: 40.0,
+                        height: 40.0,
+                        child: new ClipRRect(
+                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                          child: r.user != null
+                              ? ImageUtils.dynamicAvatar(targetHead)
+                              : Text(''),
+                        ),
+                      )
+                    ]))),
         Expanded(
             flex: 8,
             child: Container(
@@ -288,7 +308,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
         Expanded(
             flex: 2,
             child: Padding(
-                padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
+                padding: EdgeInsets.fromLTRB(5, top, 5, 5),
                 child: Container(
                     alignment: Alignment.topCenter,
                     child: new SizedBox(
@@ -330,7 +350,8 @@ class _QuestionDetailState extends State<QuestionDetail> {
     });
     Shared.instance.getString("role").then((value) {
       if (value == "1") {
-        HttpClient.send(url_query_question_image, {"id": _question.id.toString()},
+        HttpClient.send(
+            url_query_question_image, {"id": _question.id.toString()},
             (success) {
           this.setState(() {
             this.relays[0].image = success["data"]["image"];

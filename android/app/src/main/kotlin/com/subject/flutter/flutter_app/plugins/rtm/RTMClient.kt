@@ -1,4 +1,4 @@
-package io.agora.agorartm
+package com.subject.flutter.flutter_app.plugins.rtm
 
 import android.content.Context
 import android.os.Handler
