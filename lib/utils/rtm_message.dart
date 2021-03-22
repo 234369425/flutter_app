@@ -1,10 +1,12 @@
 import 'dart:convert';
 
-import 'package:agora_rtm/agora_rtm.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_app/bean/Relay.dart';
 import 'package:flutter_app/db/DBOpera.dart';
+import 'package:flutter_app/io/agora_rtm_channel.dart';
+import 'package:flutter_app/io/agora_rtm_client.dart';
+import 'package:flutter_app/io/utils.dart';
 
 class RTMMessage {
   static AgoraRtmClient _client;
