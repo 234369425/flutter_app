@@ -156,9 +156,9 @@ class _QuestionDetailState extends State<QuestionDetail> {
     relay.time = relay.time.substring(0, relay.time.indexOf('.'));
     relays.add(relay);
 
-    RTMMessage.sendMessage(
+    RTMMessage.sendRelayMessage(
         relayTo,
-        relay.toJsonStr(),
+        relay,
         () => {
               Shared.instance.getString("role").then((value) => {
                     if (value == "1")

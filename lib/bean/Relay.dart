@@ -9,6 +9,9 @@ class Relay {
   String content;
   String time;
   int isRead;
+  int tid;
+  int sec;
+  int all;
 
   String showTime(String s) {
     DateTime t = DateTime.parse(s);
@@ -45,6 +48,9 @@ class Relay {
     relay.content = json['content'];
     relay.title = json['title'];
     relay.time = json['time'];
+    relay.tid = json['tid'];
+    relay.sec = json['sec'];
+    relay.all = json['all'];
     relay.isRead = 0;
     return relay;
   }
@@ -73,6 +79,18 @@ class Relay {
 
     if(time != null){
       result['time'] = time;
+    }
+
+    if(tid != null){
+      result['tid'] = tid;
+    }
+
+    if(sec != null){
+      result['sec'] = sec;
+    }
+
+    if(all != null){
+      result['all'] = all;
     }
 
     return jsonEncode(result);

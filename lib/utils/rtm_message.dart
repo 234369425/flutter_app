@@ -13,6 +13,7 @@ class RTMMessage {
   static String title = "";
   static dynamic callback = (dynamic s) {};
   static dynamic listCallback = (dynamic s) {};
+  static var imageCache = {};
 
   static logout() async {
     _client.logout();
@@ -52,6 +53,26 @@ class RTMMessage {
         var mess = jsonDecode(message.text);
         mess['user'] = peerId;
         var relay = Relay.fromJson(mess);
+        //数据已经拆包
+        if (relay.all != null) {
+          var data = imageCache[relay.tid];
+          if (data == null) {
+            data = List(relay.all);
+          }
+          data[relay.sec] = relay.image;
+          for (var i = 0; i < data.length; i++) {
+            if (data[i] == null) {
+              return;
+            }
+          }
+
+          var imageData = '';
+          for (var i = 0; i < data.length; i++) {
+            imageData += data[i];
+          }
+          relay.image = imageData;
+        }
+
         var isNew = 1;
         if (mess['title'] == title) {
           callback(relay);
@@ -97,6 +118,41 @@ class RTMMessage {
       _channels[peerId] = channel;
     }
     return channel;
+  }
+
+  static sendRelayMessage(
+      String peerId, Relay relay, dynamic success, dynamic fail) async {
+    var k30 = 20 * 1000;
+
+    //处理message长度过长
+    if (relay.image == null || relay.image.length < k30) {
+      sendMessage(peerId, relay.toJsonStr(), success, fail);
+      return;
+    }
+    relay.tid = DateTime.now().microsecond;
+    var image = relay.image;
+
+    var blocks =
+        relay.image.length / k30 + (relay.image.length % k30 == 0 ? 0 : 1);
+
+    for (var i = 0; i < blocks; i++) {
+      try {
+        var end = k30 * (i + 1);
+        end = end > image.length - 1 ? image.length - 1 : end;
+        relay.image = image.substring(i * k30, end);
+        relay.sec = i;
+        AgoraRtmMessage message = AgoraRtmMessage.fromText(relay.toJsonStr());
+        _client.sendMessageToPeer(peerId, message, true);
+        print('Send channel message success.');
+      } catch (errorCode) {
+        if (errorCode != "4") {
+          fail();
+          return;
+        }
+        print('Send channel message error: ' + errorCode.toString());
+      }
+    }
+    success();
   }
 
   static sendMessage(

@@ -158,18 +158,19 @@ class _QuestionWidgetState extends State<QuestionWidget> {
                   ],
                 ),
                 /**
-                DropdownButton(
+                    DropdownButton(
                     isExpanded: true,
                     items: [
-                      DropdownMenuItem(
-                        child: Text('数学'),
-                      ),
-                      DropdownMenuItem(
-                        child: Text('英语'),
-                      ),
+                    DropdownMenuItem(
+                    child: Text('数学'),
+                    ),
+                    DropdownMenuItem(
+                    child: Text('英语'),
+                    ),
                     ],
                     onChanged: _dropDownChanged),
-                    */
+                 */
+                _imagePath == null ? Container() : Text(_imagePath),
                 TextField(
                   maxLines: 8,
                   controller: detail,
